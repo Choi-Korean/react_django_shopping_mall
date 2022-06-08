@@ -18,6 +18,7 @@ class CreateItemView(APIView):
 
         # 유튜브에서는 host에 session을 줬는데 .. 왜그렇게 하지? 로그인 없이 하려 그러나. 어쨌든 session 부분은
         # 좀 변경했고(뺀거나 다름없으), 다음에 다시 생각해보자. #5강의
+        # 아 윹튜브는 따로 로그인 없이 session으로 회원의 행동 관리할라고 이렇게 한거네. 채팅방일때는 무명일 경우는 이렇게 해주는 거 괜찮곘네
         serializer = self.serializer_class(data=request.data) # data 유효한지 확인
         if serializer.is_valid():
             session = self.request.session.session_key

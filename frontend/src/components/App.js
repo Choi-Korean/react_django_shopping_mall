@@ -13,7 +13,8 @@ export default class App extends Component {
 
     render(){  //< /> :  <> </>를 요약하는 문법
         return (<div>
-            <HomePage />
+            <HomePage>
+            </HomePage>
         </div> 
     )}
 }

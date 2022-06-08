@@ -10,9 +10,8 @@ export default class HomePage extends Component{
 
     render(){ // slash는 exact path로 처리해서 /buy 등이 일치하지 않게 처리
         return (<Router>
-            <p> This is the home page</p>
             <Routes> 
-                <Route exact path='/' />
+                <Route exact path='/'></Route>
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path='/create' element={<CreateItemPage />} />
             </Routes>
