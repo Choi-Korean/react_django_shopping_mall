@@ -6,12 +6,13 @@ import { Button, FormLabel, Grid, TextField } from "@material-ui/core";
 import { Typography } from '@material-ui/core';
 import { FormHelperText } from '@material-ui/core';
 import { FormControlLabel } from '@material-ui/core';
-import { Link } from 'react-router-dom';
+import { Link, Router } from 'react-router-dom';
 import { Radio } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
+import {withRouter} from './withRouter';
 
-export default class CreateItemPage extends Component{
+class CreateItemPage extends Component{
     defaultImage = null;
 
     constructor(props){
@@ -56,7 +57,7 @@ export default class CreateItemPage extends Component{
         // 오.. 여기서 django create-room api 페이지로 보내는 거네
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
-            .then((data) => console.log(data));
+            .then((data) => this.props.navigate("/item/" + data.id));
     }
 
     render(){
@@ -127,3 +128,5 @@ export default class CreateItemPage extends Component{
         ); 
     }
 }
+
+export default withRouter(CreateItemPage);

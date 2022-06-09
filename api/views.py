@@ -1,3 +1,4 @@
+from logging import root
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Item
@@ -8,6 +9,23 @@ from rest_framework.response import Response
 class ItemView(generics.CreateAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
+
+class GetItem(APIView):
+    serializer_class = ItemSerializer
+    lookup_url_kwarg = 'id'
+
+    def get(self, request, format=None):
+        id = request.GET.get(self.lookup_url_kwarg)
+        if id != None:
+            item = Item.objects.filter(id=id)   # 내가 id인 부분이 강의에서는 전부 랜덤생성한 code(session 느낌)임
+            if len(item) > 0:
+                data = ItemSerializer(item[0]).data
+                # 이건 강의에서 현재 session이 host의 session과 일치하는지 확인하고, 일치하면 현재 session을 담는거고, 아니면 걍 냅두는?
+                # 처음 보는 코드라 남겨봄
+                # data['is_host'] = self.request.session.session_key == item[0].host
+                return Response(data, status=status.HTTP_200_OK)
+            return Response({'Item Not Found': 'Invalid Item Id'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateItemView(APIView):
     serializer_class = CreateItemSerializer
