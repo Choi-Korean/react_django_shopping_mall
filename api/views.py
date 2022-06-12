@@ -1,4 +1,5 @@
 from logging import root
+from os import stat
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Item
@@ -27,6 +28,25 @@ class GetItem(APIView):
             return Response({'Item Not Found': 'Invalid Item Id'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
 
+class BuyItem(APIView):
+    lookup_url_kwarg = 'id'
+
+    def post(self, request, foramt=None):
+        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+            self.request.session.create()
+        
+        id = request.data.get('id')
+        if id != None:
+            item_result = Item.objects.filter(id=id)
+            if len(item_result) > 0:
+                item = item_result[0]
+                self.request.session['id'] = id # id로 세션 부여
+                return Response({'message':'Item Bought!'}, status=status.HTTP_200_OK)
+            # Id 일치하는 거 없으면 Bad request
+            return Response({'message':'Invalid id'}, status=status.HTTP_400_BAD_REQUEST)
+        # 보낸 id 없으면 bad request
+        return Response({'Bad Request':'Invalid post data, did not find a id'}, status=status.HTTP_400_BAD_REQUEST)
+
 class CreateItemView(APIView):
     serializer_class = CreateItemSerializer
 
@@ -50,8 +70,12 @@ class CreateItemView(APIView):
                 item.image = image
                 item.listing_or_not = listing_or_not
                 item.save(update_fields=['writer', 'image', 'listing_or_not'])
+                self.request.session['id'] = item.id
+                return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
             else:
                 item = Item(writer=writer, image=image, listing_or_not=listing_or_not)
                 item.save()
+                self.request.session['id'] = item.id
+                return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
             
-            return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
+        return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)

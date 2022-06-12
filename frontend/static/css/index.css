@@ -15,5 +15,14 @@ html, body {
 #app{
     width: 100%;
     height: 100%;
-    display: flex;
+}
+
+.center {
+    /*  고정 X */
+    position: absolute; 
+    /* center 클래스는 어느 화면에서든 중앙에 맞춰지게 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
 }
