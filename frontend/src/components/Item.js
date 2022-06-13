@@ -11,10 +11,10 @@ export default function Item(props) {
       writer: 'writer'
     }
     const [postData, setPostData] = useState(initialState) 
-    const { postId } = useParams()
+    const { id } = useParams()
   
     useEffect(() => {
-      fetch("/api/get-item" + "?id=" + postId)
+      fetch("/api/get-item" + "?id=" + id)
         .then(res => res.json())
         .then(data => {
             setPostData({
@@ -24,10 +24,10 @@ export default function Item(props) {
             writer: data.writer,
           })
         })
-    },[postId,setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+    },[id,setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
     return (
       <div>
-        <h3>{postId}</h3>
+        <h3>{id}</h3>
         <p>Votes: {postData.image}</p>  
         <p>Guest: {postData.listing_or_not.toString()}</p>
         <p>Host: {postData.writer.toString()}</p>  

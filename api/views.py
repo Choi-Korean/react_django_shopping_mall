@@ -1,11 +1,13 @@
 from logging import root
 from os import stat
+from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Item
 from .serializers import ItemSerializer, CreateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import JsonResponse
 
 class ItemView(generics.CreateAPIView):
     queryset = Item.objects.all()
@@ -79,3 +81,13 @@ class CreateItemView(APIView):
                 return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
             
         return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
+
+class UserInItem(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+            self.request.session.create()
+
+        data = {
+            'id': self.request.session.get('id')
+        }
+        return JsonResponse(data, status=status.HTTP_200_OK)
