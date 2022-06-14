@@ -11,7 +11,8 @@ export default class HomePage extends Component{
         super(props);
         this.state = {
             id: null,
-        }
+        };
+        this.clearId = this.clearId.bind(this);
     }
 
     // ** 중요 : 사용자 상태에 따라 component 다르게 적용하는 것?
@@ -27,7 +28,7 @@ export default class HomePage extends Component{
             })
         });
     }
-
+    
     renderHomePage(){
         return (
             <Grid container spacing={3}>
@@ -51,6 +52,12 @@ export default class HomePage extends Component{
         );
     }
 
+    clearId(){
+        this.setState({
+            id: null,
+        });
+    }
+    
     render(){ // slash는 exact path로 처리해서 /buy 등이 일치하지 않게 처리
         return (<Router>
             <Routes> 
@@ -64,7 +71,11 @@ export default class HomePage extends Component{
                 }}></Route> */}
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:id' element={<Item />} />
+                <Route path='/item/:id' element={<Item />}
+                    render={(props) => {
+                    return <Item {...props} leaveItemCallback={this.clearId} />;
+                }}
+                />
             </Routes>
         </Router>);
     }

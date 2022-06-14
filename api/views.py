@@ -91,3 +91,14 @@ class UserInItem(APIView):
             'id': self.request.session.get('id')
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
+    
+class LeaveItem(APIView):
+    def post(self, request, format=None):
+        if 'id' in self.request.session:
+            self.request.session.pop('id')
+            writer_id = self.request.session.session_key
+            item_results = Item.objects.filter(writer=writer_id)
+            if len(item_results) > 0:   # 이건 노래방 웹앱만들기였는데, 방에 아무도 없으면 방 삭제하는 코드용이었음
+                item = item_results[0]
+                item.delete()
+        return Response({'Message': 'Success'}, status=status.HTTP_200_OK)

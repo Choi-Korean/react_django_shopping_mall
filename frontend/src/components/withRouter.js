@@ -12,6 +12,7 @@ const Wrapper = (props) => {
     return (
     <Component
         navigate={navigate}
+        //  ... : spread operator. 넘겨진 props(properties) 전부 써줌. props 일일히 써주는 작업 없애주는 약속어?
         {...props}
         />
     );
