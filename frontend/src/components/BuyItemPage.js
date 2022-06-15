@@ -7,7 +7,7 @@ class BuyItemPage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            id: "",
+            code: "",
             error: "",
         };
         this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
@@ -27,7 +27,7 @@ class BuyItemPage extends Component{
                         error={this.state.error}
                         label="Code"
                         placeholder="Enter a Code"
-                        value={this.state.id}
+                        value={this.state.code}
                         helperText={this.state.error}
                         variant="outlined"
                         onChange={this.handleTextFieldChange}
@@ -45,7 +45,7 @@ class BuyItemPage extends Component{
 
     handleTextFieldChange(e){
         this.setState({
-            id: e.target.value,
+            code: e.target.value,
         })
     }
 
@@ -54,14 +54,14 @@ class BuyItemPage extends Component{
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
-                id: this.state.id
+                code: this.state.code
             })
         };
         fetch('/api/buy-item/', requestOptions).then((response) => {
             if (response.ok){
-                this.props.navigate(`/item/${this.state.id}`);
+                this.props.navigate(`/item/${this.state.code}`);
             }else{
-                this.setState({error: "Id not found."});
+                this.setState({error: "code not found."});
             }
         }).catch((error) => {
             console.log(error);

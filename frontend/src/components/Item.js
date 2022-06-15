@@ -14,20 +14,19 @@ export default function Item(props) {
   const initialState = {
     image: null,
     listing_or_not: true,
-    writer: 'writer',
-    showSettings: false
+    showSettings: false,
+    isWriter: false,
   }
   const [postData, setPostData] = useState(initialState) 
-  const { id } = useParams()
-  const [getId, setId] = id
+  const { code } = useParams()
+  const [getCode, setCode] = code
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/get-item" + "?id=" + id)
+    fetch("/api/get-item" + "?code=" + code)
       .then((res) => {
-        console.log(res);
         if(!res.ok){
-          clearId;
+          clearCode;
           navigate("/");
         }
         return res.json();
@@ -36,10 +35,9 @@ export default function Item(props) {
           ...postData, 
           image: data.image,
           listing_or_not: data.listing_or_not,
-          writer: data.writer,
         })
       })
-  },[id,setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+  },[code, setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
 
   // useEffect는 홈페이지 시작될 때마다 실행되는 함수. 이걸로 어케 해볼라 했는데 버튼 클릭하면 session 해제하는 의도랑 다른 거라 냅두고 바꿈
     // useEffect(() => {
@@ -70,21 +68,21 @@ export default function Item(props) {
         headers: {"Content-Type": "application/json"},
       };
       fetch("/api/leave-item/", requestOptions).then((response) => {
-        clearId;
+        clearCode;
         navigate("/");
       });
     };
 
-    const clearId = () => {
-      setId({
-          id: null,
+    const clearCode = () => {
+      setCode({
+        code: null,
       });
   }
 
     const updateShowSettings = (value) => {
       setPostData({
         ...postData, 
-        showSettings: value,
+        showSettings: value
       });
     }
 
@@ -92,7 +90,12 @@ export default function Item(props) {
       return(
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
-          <CreateItemPage update={true} image={postData.image} listing_or_not={postData.listing_or_not} id={getId} updateCallBack={() => {}} />
+          <CreateItemPage
+            update={true}
+            image={postData.image}
+            listing_or_not={postData.listing_or_not}
+            code={code}
+            updateCallBack={postData} />
         </Grid>
         <Grid item xs={12} align="center">
           <Button variant="contained" color="secondary" onClick={() => updateShowSettings(false)}>
@@ -100,7 +103,7 @@ export default function Item(props) {
           </Button>
         </Grid>
       </Grid>
-      )
+      );
     }
 
     const renderSettingsButton = () => {
@@ -120,25 +123,20 @@ export default function Item(props) {
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
           <Typography variant="h4" componoet="h4">
-            Id: {id}
+            COde: {code}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
           <Typography variant="h6" componoet="h6">
-            Votes: {postData.image}
+            Image: {postData.image}
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
           <Typography variant="h6" componoet="h6">
-            Guest: {postData.listing_or_not.toString()}
+            판매중: {postData.listing_or_not.toString()}
           </Typography>
         </Grid>
-        <Grid item xs={12} align="center">
-          <Typography variant="h6" componoet="h6">
-            Host: {postData.writer.toString()}
-          </Typography>
-        </Grid>
-        {getId? renderSettingsButton(): null}
+        {getCode? renderSettingsButton(): null}
         <Grid item xs={12} align="center">
           {/* <Button variant="contained" color="secondary" onClick={
             () => {
@@ -151,7 +149,7 @@ export default function Item(props) {
               {"/"};
             }
           }> */}
-          <Button variant="contained" color="secondary" onClick={leaveButtonPressed}>
+          <Button variant="contained" color="secondary" onClick={() => leaveButtonPressed()}>
               Leave Item
           </Button>
         </Grid>

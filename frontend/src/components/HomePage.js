@@ -10,9 +10,9 @@ export default class HomePage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            id: null,
+            code: null,
         };
-        this.clearId = this.clearId.bind(this);
+        this.clearCode = this.clearCode.bind(this);
     }
 
     // ** 중요 : 사용자 상태에 따라 component 다르게 적용하는 것?
@@ -24,7 +24,7 @@ export default class HomePage extends Component{
         .then((response) => response.json())
         .then((data) => {
             this.setState({
-                id: data.id
+                code: data.code
             })
         });
     }
@@ -52,9 +52,9 @@ export default class HomePage extends Component{
         );
     }
 
-    clearId(){
+    clearCode(){
         this.setState({
-            id: null,
+            code: null,
         });
     }
     
@@ -63,7 +63,7 @@ export default class HomePage extends Component{
             <Routes> 
                 {/* id 변경사항이 있다면 (? : if), item/id 주소로 이동시키고, 아니면 그냥 홈페이지 rendering */}
                 <Route path='/*' element={
-                    this.state.id ? (<Navigate replace to={`/item/${this.state.id}`} />) : ( this.renderHomePage() )
+                    this.state.code ? (<Navigate replace to={`/item/${this.state.code}`} />) : ( this.renderHomePage() )
                 }></Route>
                 {/* 아래 안 되어서 위 코드로 바꿈. 아래도 원래 강의 코드 안되어서 바꿨던 거. */}
                 {/* <Route path='/*' render={() => {
@@ -71,9 +71,9 @@ export default class HomePage extends Component{
                 }}></Route> */}
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:id' element={<Item />}
+                <Route path='/item/:code' element={<Item />}
                     render={(props) => {
-                    return <Item {...props} leaveItemCallback={this.clearId} />;
+                    return <Item {...props} leaveItemCallback={this.clearCode} />;
                 }}
                 />
             </Routes>
