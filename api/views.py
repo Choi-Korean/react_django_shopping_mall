@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Item
-from .serializers import ItemSerializer, CreateItemSerializer
+from .serializers import ItemSerializer, CreateItemSerializer, updateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
@@ -102,3 +102,32 @@ class LeaveItem(APIView):
                 item = item_results[0]
                 item.delete()
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
+
+class UpdateItem(APIView):
+    serializer_class = updateItemSerializer
+
+    def patch(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+            self.request.session.create()
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            image = serializer.data.get('data')
+            listing_or_not = serializer.data.get('listing_or_not')
+            id = serializer.data.get('id')
+            queryset = Item.objects.filter(id=id)
+
+            if not queryset.exists():
+                return Response({'msg': 'Item not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            item = queryset[0]
+            user_id = self.request.session.session_key
+            if item.id != user_id:
+                return Response({'msg': 'You are not the writer of this item.'}, status=status.HTTP_403_FORBIDDEN)
+            
+            item.image = image
+            item.listing_or_not = listing_or_not
+            item.save(update_fields=['image', 'listing_or_not'])
+            return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
+
+        return Response({'Bad Request': 'Invalid Data...'}, stats=status.HTTP_400_BAD_REQUEST)

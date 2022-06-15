@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';   // react-router-dom v6부터는 
  // https://github.com/remix-run/react-router/issues/8146
 import { Grid, Button, Typography } from '@material-ui/core'
 import { useNavigate } from 'react-router-dom';
+import CreateItemPage from './CreateItemPage';
 
 // 에러 수정 필요 : id 세션제거
 // (1) 두개의 홈페이지에서 같은 id 페이지 띄우고, 하나에서 session 제거해서 초기페이지로 이동시, 다른 페이지도 새로고침시 이동되어야 하는데 안됨.
@@ -13,7 +14,8 @@ export default function Item(props) {
   const initialState = {
     image: null,
     listing_or_not: true,
-    writer: 'writer'
+    writer: 'writer',
+    showSettings: false
   }
   const [postData, setPostData] = useState(initialState) 
   const { id } = useParams()
@@ -79,6 +81,41 @@ export default function Item(props) {
       });
   }
 
+    const updateShowSettings = (value) => {
+      setPostData({
+        ...postData, 
+        showSettings: value,
+      });
+    }
+
+    const renderSettings = () => {
+      return(
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateItemPage update={true} image={postData.image} listing_or_not={postData.listing_or_not} id={getId} updateCallBack={() => {}} />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button variant="contained" color="secondary" onClick={() => updateShowSettings(false)}>
+              Close
+          </Button>
+        </Grid>
+      </Grid>
+      )
+    }
+
+    const renderSettingsButton = () => {
+      return (
+        <Grid item xs={12} align="center">
+            <Button variant="contained" color="primary" onClick={() => updateShowSettings(true)}>
+              Settings
+            </Button>
+        </Grid>
+      );
+    }
+
+    if(postData.showSettings){
+      return renderSettings();
+    }
     return (
       <Grid container spacing={1}>
         <Grid item xs={12} align="center">
@@ -101,6 +138,7 @@ export default function Item(props) {
             Host: {postData.writer.toString()}
           </Typography>
         </Grid>
+        {getId? renderSettingsButton(): null}
         <Grid item xs={12} align="center">
           {/* <Button variant="contained" color="secondary" onClick={
             () => {
