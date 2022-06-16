@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 // 사용된 material UI 궁금하면 직접 Google material UI를 검색해서 알아보고 공부하기
-// https://www.youtube.com/watch?v=YDgZd9i3le4&list=WL&index=17&t=163s 22:14
 
 import { Button, FormLabel, Grid, TextField } from "@material-ui/core";
 import { Typography } from '@material-ui/core';
@@ -13,6 +12,7 @@ import { RadioGroup } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
 import {withRouter} from './withRouter';
 import { Collapse } from '@material-ui/core';
+import Alert from "@material-ui/lab/Alert";
 
 class CreateItemPage extends Component{
     static defaultProps = {
@@ -69,7 +69,6 @@ class CreateItemPage extends Component{
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
             .then((data) => this.props.navigate("/item/" + data.code));
-        console.log("create");
     }
 
     handleUpdateButtonPressed(){
@@ -93,8 +92,9 @@ class CreateItemPage extends Component{
                         msg: "Error Updating Item..."
                     });
                 }
-                // this.props.updateCallBack;
-                location.reload();  // 여기서 위처럼 props로 item page에서 render 효과 받아야 하는데, 함수로 안써서 그냥 새로고침 형식으로 전환
+                // this.props.updateCallBack();
+                // location.reload();  // 여기서 위처럼 props로 item page에서 render 효과 받아야 하는데, 함수로 안써서 그냥 새로고침 형식으로 전환
+                // 근데 updating 하면 message 띄워주는데 그게 새로고침하면 안보임. 그래서 메시지 클릭하면 새로고침되게 바꿔놨음 일단. 그게 이뻐서
             });
     }
 
@@ -134,7 +134,7 @@ class CreateItemPage extends Component{
         <Grid container spacing={1}>
             <Grid item xs={12} align="center">
                 <Collapse in={this.state.msg != ""}>
-                    {this.state.msg}
+                    {(<Alert onClose={() => {this.setState({msg: ""}); location.reload();}}>{this.state.msg}</Alert>)}
                 </Collapse>
             </Grid>
             <Grid item xs={12} align="center">

@@ -128,7 +128,6 @@ class UpdateItem(APIView):
 
             # 여기서 사용자 id와 세션 id 다르면 에러처리 해줘야 하는데, 내가 session 부여 쪽을 의도대로 안해놔서.. 이건 빼야 할듯 우선
             user_id = self.request.session.session_key
-            print(user_id == item.writer)
             if item.writer != user_id:
                 return Response({'msg': 'You are not the writer of this item.'}, status=status.HTTP_403_FORBIDDEN)
             

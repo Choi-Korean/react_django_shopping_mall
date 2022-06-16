@@ -408,3 +408,6 @@ sketch
 
 # no secret.json files
 *secrets.json
+
+#spotify
+credentials.py

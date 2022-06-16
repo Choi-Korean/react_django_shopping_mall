@@ -17,9 +17,9 @@ export default function Item(props) {
     showSettings: false,
     isWriter: false,
   }
-  const [postData, setPostData] = useState(initialState) 
-  const { code } = useParams()
-  const [getCode, setCode] = useState(code)
+  const [postData, setPostData] = useState(initialState);
+  const { code } = useParams();
+  const [getCode, setCode] = useState(code);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,7 +32,6 @@ export default function Item(props) {
         return res.json();
       }).then(data => {
           setPostData({
-          ...postData, 
           image: data.image,
           listing_or_not: data.listing_or_not,
         })
@@ -74,11 +73,13 @@ export default function Item(props) {
     };
 
     const updateShowSettings = (value) => {
+      console.log("1 : " + postData.showSettings);
+      console.log(value);
       setPostData({
         ...postData, 
         showSettings: value
       });
-      console.log("updateShowSettings : " +getCode);
+      console.log(postData.showSettings);
     }
 
     const renderSettings = () => {
@@ -90,11 +91,12 @@ export default function Item(props) {
             image={postData.image}
             listing_or_not={postData.listing_or_not}
             code={getCode}
-            // updateCallBack={postData} // 여기서 원래 useEffect같은거 전달해서 reRender효과 줘야 함. 강의에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reloda 처리
+            // updateCallBack={} // 여기서 원래 useEffect같은거 전달해서 reRender효과 줘야 함. 강의에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reloda 처리
             />
         </Grid>
         <Grid item xs={12} align="center">
-          <Button variant="contained" color="secondary" onClick={() => updateShowSettings(false)}>
+          {/* setting값 변경하고 close 누르면, 새로고침을 안하면 값변경내용이 안되어서 우선 reload처리로 했음. 이것보단 rerendering 처리해주는게 좋은데.. 왜 안되지?*/}
+          <Button variant="contained" color="secondary" onClick={() => {updateShowSettings(false); location.reload()}}>
               Close
           </Button>
         </Grid>
