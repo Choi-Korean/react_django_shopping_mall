@@ -73,12 +73,6 @@ export default function Item(props) {
       });
     };
 
-    const clearCode = () => {
-      setCode({
-        code: null
-    });
-  }
-
     const updateShowSettings = (value) => {
       setPostData({
         ...postData, 
@@ -96,7 +90,7 @@ export default function Item(props) {
             image={postData.image}
             listing_or_not={postData.listing_or_not}
             code={getCode}
-            // updateCallBack={postData}
+            // updateCallBack={postData} // 여기서 원래 useEffect같은거 전달해서 reRender효과 줘야 함. 강의에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reloda 처리
             />
         </Grid>
         <Grid item xs={12} align="center">

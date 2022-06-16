@@ -39,9 +39,8 @@ class CreateItemPage extends Component{
         this.handleCreateButtonPressed = this.handleCreateButtonPressed.bind(this);
         this.handleImageChanged = this.handleImageChanged.bind(this);
         this.handlelisting_or_not = this.handlelisting_or_not.bind(this);
-        this.handleUpdateButtonPressed = this.handleUpdateButtonPressed(this);
-        // this.renderCreateButtons = this.renderCreateButtons(this);
-        // this.renderUpdateButtons = this.renderUpdateButtons(this);
+        this.handleUpdateButtonPressed = this.handleUpdateButtonPressed.bind(this); // 와 아니 뭐지? 정확히 똑같은 글씨(코드)인데 색이 노래서 보니까 오류가 있었는데?
+        // 그래서 그냥 다시 타이핑 하니까 오류 사라짐... 아니... 하...이거 찾을라고... 몇시간..
     }
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
@@ -70,6 +69,7 @@ class CreateItemPage extends Component{
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
             .then((data) => this.props.navigate("/item/" + data.code));
+        console.log("create");
     }
 
     handleUpdateButtonPressed(){
@@ -93,7 +93,8 @@ class CreateItemPage extends Component{
                         msg: "Error Updating Item..."
                     });
                 }
-                this.props.updateCallBack();
+                // this.props.updateCallBack;
+                location.reload();  // 여기서 위처럼 props로 item page에서 render 효과 받아야 하는데, 함수로 안써서 그냥 새로고침 형식으로 전환
             });
     }
 
@@ -102,7 +103,7 @@ class CreateItemPage extends Component{
             // jsx expression은 반드시 1개의 upper level parent에 쌓여있어야 함.
             <Grid container spacing={1}>
                 <Grid item xs={12} align="center">
-                    <Button color="secondary" variant="contained" onClick={this.handleCreateButtonPressed}>
+                    <Button color="secondary" variant="contained" onClick={() => this.handleCreateButtonPressed()}>
                         Create A Item
                     </Button>
                 </Grid>
@@ -118,7 +119,7 @@ class CreateItemPage extends Component{
     renderUpdateButtons(){
         return(
             <Grid item xs={12} align="center">
-                <Button color="primary" variant="contained" onClick={this.handleUpdateButtonPressed}>
+                <Button color="primary" variant="contained" onClick={() => this.handleUpdateButtonPressed()}>
                     Update Item
                 </Button>
             </Grid>
