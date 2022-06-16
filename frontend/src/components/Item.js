@@ -16,10 +16,11 @@ export default function Item(props) {
     listing_or_not: true,
     showSettings: false,
     isWriter: false,
+    spotifyAuthenticated: false,  // 초기 인증값 false
   }
   const [postData, setPostData] = useState(initialState);
   const { code } = useParams();
-  const [getCode, setCode] = useState(code);
+  // const [getCode, setCode] = useState(code);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,11 +33,21 @@ export default function Item(props) {
         return res.json();
       }).then(data => {
           setPostData({
+          ...postData,
           image: data.image,
           listing_or_not: data.listing_or_not,
+          isWriter: data.writer,
         })
-      })
-  },[setCode, setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+        console.log(data.writer)
+        console.log(postData)
+      });
+      if(!postData.isWriter){
+        console.log("이건 트루다 : " + postData.isWriter);
+      }
+      if(!postData.isWriter){
+        authenticateSpotify();
+      }
+  },[setPostData]) //setCode 뺌 //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
 
   // useEffect는 홈페이지 시작될 때마다 실행되는 함수. 이걸로 어케 해볼라 했는데 버튼 클릭하면 session 해제하는 의도랑 다른 거라 냅두고 바꿈
     // useEffect(() => {
@@ -54,6 +65,27 @@ export default function Item(props) {
     // });
     // console.log(getId);
     //     }, [id, setId])
+
+
+      // API 서버에서 auth 받아오기
+    const authenticateSpotify = () => {
+      fetch('/spotify/is-authenticated')
+      .then((response) => response.json())
+      .then((data) => {
+        setPostData({
+          ...postData,
+          spotifyAuthenticated: data.status
+        });
+        console.log(data.status);
+        if(!data.status){ // auth값이 없다면 <- 권한 초기에 받아야 할 경우
+          fetch('/spotify/get-auth-url')
+          .then((response) => response.json())
+          .then((data) => {
+            window.location.replace(data.url);  // auth 받는 url로 redirect 시켜주기
+          })
+        };
+      });
+    }
 
 
 // 강의에선 class component라 함수형으로 만들고, hisotry.push 사용헀음.
@@ -90,7 +122,7 @@ export default function Item(props) {
             update={true}
             image={postData.image}
             listing_or_not={postData.listing_or_not}
-            code={getCode}
+            code={code}
             // updateCallBack={} // 여기서 원래 useEffect같은거 전달해서 reRender효과 줘야 함. 강의에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reloda 처리
             />
         </Grid>
@@ -134,7 +166,7 @@ export default function Item(props) {
             판매중: {postData.listing_or_not.toString()}
           </Typography>
         </Grid>
-        {getCode? renderSettingsButton(): null}
+        {code? renderSettingsButton(): null}
         <Grid item xs={12} align="center">
           {/* <Button variant="contained" color="secondary" onClick={
             () => {
