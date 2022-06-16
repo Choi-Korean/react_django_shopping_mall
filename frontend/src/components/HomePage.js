@@ -25,7 +25,7 @@ export default class HomePage extends Component{
         .then((data) => {
             this.setState({
                 code: data.code
-            })
+            });
         });
     }
     
@@ -71,10 +71,7 @@ export default class HomePage extends Component{
                 }}></Route> */}
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:code' element={<Item />}
-                    render={(props) => {
-                    return <Item {...props} leaveItemCallback={this.clearCode} />;
-                }}
+                <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}
                 />
             </Routes>
         </Router>);

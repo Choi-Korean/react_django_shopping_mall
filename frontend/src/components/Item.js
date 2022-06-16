@@ -19,14 +19,14 @@ export default function Item(props) {
   }
   const [postData, setPostData] = useState(initialState) 
   const { code } = useParams()
-  const [getCode, setCode] = code
+  const [getCode, setCode] = useState(code)
   const navigate = useNavigate();
 
   useEffect(() => {
     fetch("/api/get-item" + "?code=" + code)
       .then((res) => {
         if(!res.ok){
-          clearCode;
+          props.leaveItemCallback();
           navigate("/");
         }
         return res.json();
@@ -37,7 +37,7 @@ export default function Item(props) {
           listing_or_not: data.listing_or_not,
         })
       })
-  },[code, setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+  },[setCode, setPostData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
 
   // useEffect는 홈페이지 시작될 때마다 실행되는 함수. 이걸로 어케 해볼라 했는데 버튼 클릭하면 session 해제하는 의도랑 다른 거라 냅두고 바꿈
     // useEffect(() => {
@@ -68,15 +68,15 @@ export default function Item(props) {
         headers: {"Content-Type": "application/json"},
       };
       fetch("/api/leave-item/", requestOptions).then((response) => {
-        clearCode;
+        props.leaveItemCallback();
         navigate("/");
       });
     };
 
     const clearCode = () => {
       setCode({
-        code: null,
-      });
+        code: null
+    });
   }
 
     const updateShowSettings = (value) => {
@@ -84,6 +84,7 @@ export default function Item(props) {
         ...postData, 
         showSettings: value
       });
+      console.log("updateShowSettings : " +getCode);
     }
 
     const renderSettings = () => {
@@ -94,8 +95,8 @@ export default function Item(props) {
             update={true}
             image={postData.image}
             listing_or_not={postData.listing_or_not}
-            code={code}
-            updateCallBack={postData}
+            code={getCode}
+            // updateCallBack={postData}
             />
         </Grid>
         <Grid item xs={12} align="center">
