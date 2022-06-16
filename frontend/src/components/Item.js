@@ -95,7 +95,8 @@ export default function Item(props) {
             image={postData.image}
             listing_or_not={postData.listing_or_not}
             code={code}
-            updateCallBack={postData} />
+            updateCallBack={postData}
+            />
         </Grid>
         <Grid item xs={12} align="center">
           <Button variant="contained" color="secondary" onClick={() => updateShowSettings(false)}>

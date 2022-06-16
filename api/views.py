@@ -38,7 +38,7 @@ class BuyItem(APIView):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
         
-        code = request.data.get('code')
+        code = request.data.get(self.lookup_url_kwarg)
         if code != None:
             item_result = Item.objects.filter(code=code)
             if len(item_result) > 0:
@@ -89,14 +89,14 @@ class UserInItem(APIView):
             self.request.session.create()
 
         data = {
-            'code': self.request.session.get('code')
+            'code': self.request.session.get('item_code')
         }
         return JsonResponse(data, status=status.HTTP_200_OK)
     
 class LeaveItem(APIView):
     def post(self, request, format=None):
-        if 'code' in self.request.session:
-            self.request.session.pop('code')
+        if 'item_code' in self.request.session:
+            self.request.session.pop('item_code')
             writer_id = self.request.session.session_key
             item_results = Item.objects.filter(writer=writer_id)
             if len(item_results) > 0:   # 이건 노래방 웹앱만들기였는데, 방에 아무도 없으면 방 삭제하는 코드용이었음
@@ -115,7 +115,7 @@ class UpdateItem(APIView):
         if not serializer.is_valid():
             print(serializer.errors)
         if serializer.is_valid():
-            image = serializer.data.get('data')
+            image = serializer.data.get('image')
             listing_or_not = serializer.data.get('listing_or_not')
             code = serializer.data.get('code')
             queryset = Item.objects.filter(code=code)

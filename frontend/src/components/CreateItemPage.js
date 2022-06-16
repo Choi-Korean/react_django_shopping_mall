@@ -19,7 +19,7 @@ class CreateItemPage extends Component{
         image: null,
         listing_or_not: true,
         update: false,
-        // code: null,
+        code: null,
         updateCallBack: () => {},
     };
 
@@ -40,6 +40,8 @@ class CreateItemPage extends Component{
         this.handleImageChanged = this.handleImageChanged.bind(this);
         this.handlelisting_or_not = this.handlelisting_or_not.bind(this);
         this.handleUpdateButtonPressed = this.handleUpdateButtonPressed(this);
+        // this.renderCreateButtons = this.renderCreateButtons(this);
+        // this.renderUpdateButtons = this.renderUpdateButtons(this);
     }
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
@@ -71,7 +73,6 @@ class CreateItemPage extends Component{
     }
 
     handleUpdateButtonPressed(){
-        console.log(this.props.code)
         const requestOptions = {
             method: "PATCH",
             headers: {'Content-Type': 'application/json'},
@@ -81,7 +82,6 @@ class CreateItemPage extends Component{
                 code: this.props.code
             }),
         };
-
         fetch("/api/update-item/", requestOptions)
             .then((response) => {
                 if(response.ok){

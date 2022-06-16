@@ -13,7 +13,7 @@ def generate_unique_code():
 
 
 class Item(models.Model):
-    code = models.CharField(max_length=8, default=generate_unique_code, unique=True, null=True)
+    code = models.CharField(max_length=8, default=generate_unique_code, unique=True)
     writer = models.CharField(max_length=50, null=True)
     image = models.ImageField(verbose_name='image', null=True, blank=True)
     listing_or_not = models.BooleanField(null=False, default=False) # 장바구니 표현하려 했으나, boolean이면 안될 거 같아서 판매가능여부로 치자
