@@ -101,3 +101,21 @@ class CurrentSong(APIView):
         }
 
         return Response(song, status=status.HTTP_200_OK)
+
+class PauseSong(APIView):
+    def put(self, response, format=None):
+        item_code = self.request.session.get('item_code')
+        item = Item.objects.filter(code=item_code)[0]
+        if self.request.session.session_key == item.writer:
+            pause_song(item.writer)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+
+class PlaySong(APIView):
+    def put(self, response, format=None):
+        item_code = self.request.session.get('item_code')
+        item = Item.objects.filter(code=item_code)[0]
+        if self.request.session.session_key == item.writer:
+            play_song(item.writer)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status=status.HTTP_403_FORBIDDEN)

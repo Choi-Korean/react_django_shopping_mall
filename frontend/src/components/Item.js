@@ -44,7 +44,8 @@ export default function Item(props) {
       if(postData.isWriter){
         authenticateSpotify();
       };
-      getCurrentSong(); // 아래 request 많이 보내면 혹시 모를 부담있을까봐 걍 한번 호출로 바꿈 일단. 엥? 근데 이것만 해도 계속 request 하는 거 같은데?
+      // getCurrentSong(); // 아래 request 많이 보내면 혹시 모를 부담있을까봐 걍 한번 호출로 바꿈 일단. 엥? 근데 이것만 해도 계속 request 하는 거 같은데?
+      // 내가 아래에 song 정보 바뀔때마다 Effect 실행되게 해서 그런듯
       // componentDidMount(); // 이거 호출하면 1초당 한번씩 request. 
       // componentWillUnmount();
   },[postData.isWriter, spotifyAuthenticated, song]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
