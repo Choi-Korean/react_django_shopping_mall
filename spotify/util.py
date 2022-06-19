@@ -1,10 +1,14 @@
 from datetime import timedelta
+from email import header
+from secrets import token_urlsafe
 from urllib import response
 from .models import SpotifyToken
 from django.utils import timezone
 from datetime import timedelta
 from .credentials import CLIENT_ID, CLIENT_SECRET
-from requests import post
+from requests import post, put, get
+
+BASE_URL = "https://api.spotify.com/v1/me/"
 
 # token 저장용 함수
 
@@ -25,6 +29,7 @@ def update_or_create_user_tokens(session_id, access_token, token_type, expires_i
         tokens.expires_in = expires_in
         tokens.token_type = token_type
         tokens.save(update_fields=['access_token', 'refresh_token', 'expires_in', 'token_type'])
+        print(tokens.refresh_token)
     else:
         tokens = SpotifyToken(user=session_id, access_token=access_token, refresh_token=refresh_token, token_type=token_type, expires_in=expires_in)
         tokens.save()
@@ -35,7 +40,7 @@ def update_or_create_user_tokens(session_id, access_token, token_type, expires_i
 
 def is_spotify_authenticated(session_id):
     tokens = get_user_tokens(session_id)
-    if tokens:
+    if tokens.refresh_token is not None:
         expiry = tokens.expires_in
         if expiry <= timezone.now():
             refresh_spotify_token(session_id)
@@ -57,3 +62,20 @@ def refresh_spotify_token(session_id):
     refresh_token =response.get('refresh_token')
 
     update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token)
+
+# endpoint : request 보낼 곳
+def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False): #  오 내가 생각했더 ㄴ거네. 이렇게 put, post 뭐로 할지 보내게 한다음에 한번에 분기처리
+    tokens = get_user_tokens(session_id)
+    headers = {'Content-Type': 'application/json', 'Authorization': "Bearer " + tokens.access_token} # Spotify 규정. 거기 doc 보기 이 구조 어떻게 쓰일지 보려면
+
+    # post, put은 response 상관 안할거니, get으로 받아야겠지
+    if post_:
+        post(BASE_URL + endpoint, headers=headers)
+    if put_:
+        put(BASE_URL + endpoint, headers=headers)
+
+    response = get(BASE_URL + endpoint, {}, headers=headers)
+    try:
+        return response.json()
+    except:
+        return {'ERROR': 'Issue with request'}
