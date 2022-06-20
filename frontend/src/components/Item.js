@@ -18,6 +18,7 @@ export default function Item(props) {
     listing_or_not: true,
     showSettings: false,
     isWriter: false,
+    like_count: 0
     // spotifyAuthenticated: false,  // 초기 인증값 false
   }
   const [postData, setPostData] = useState(initialState);
@@ -39,6 +40,7 @@ export default function Item(props) {
           image: data.image,
           listing_or_not: data.listing_or_not,
           isWriter: data.is_writer,
+          like_count: data.like_count
         })
       });
       if(postData.isWriter){
@@ -46,15 +48,15 @@ export default function Item(props) {
       };
       // getCurrentSong(); // 아래 request 많이 보내면 혹시 모를 부담있을까봐 걍 한번 호출로 바꿈 일단. 엥? 근데 이것만 해도 계속 request 하는 거 같은데?
       // 내가 아래에 song 정보 바뀔때마다 Effect 실행되게 해서 그런듯
-      // componentDidMount(); // 이거 호출하면 1초당 한번씩 request. 
+      componentDidMount(); // 이거 호출하면 1초당 한번씩 request. 
       // componentWillUnmount();
-  },[postData.isWriter, spotifyAuthenticated, song]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+  },[postData.isWriter, spotifyAuthenticated]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
   // 이 배열안에 들어간 값(컴포넌트)이 바뀔 때마다 useEffect 실행됨. 비우면 처음 렌더링 될때 한번만 실행. 배열을 생략하면 리렌더링 될때마다 실행
 
 
   // 매 1초마다 API 요청 보내는 websocket 역할. 와 신기하다. 계속 보내네
   const componentDidMount = () => {
-    const interval = setInterval(getCurrentSong, 1000);
+    const interval = setInterval(getCurrentSong, 10000);
   }
 
   const componentWillUnmount = () => {
@@ -105,6 +107,7 @@ export default function Item(props) {
     fetch("/api/leave-item/", requestOptions).then((response) => {
       props.leaveItemCallback();
       navigate("/");
+      location.reload() // navigate만 하면 왠지 모르겠는데 자꾸 item.js에 있는 useEffect도 실행이 된다? 그래서 reload 일단 한건데. 아니 그럼 rerender 의미가 없는데
     });
   };
 
@@ -123,6 +126,7 @@ export default function Item(props) {
           update={true}
           image={postData.image}
           listing_or_not={postData.listing_or_not}
+          like_count={postData.like_count}
           code={code}
           // updateCallBack={useEffect}
           // updateCallBack={} // 여기서 원래 useEffect같은거 전달하고, createItem page에서 값 업데이트 되면 이거 써서 reRender효과 줘야 함.
@@ -160,7 +164,7 @@ export default function Item(props) {
         </Typography>
       </Grid>
       <MusicPlayer {...song}/>
-      {code? renderSettingsButton(): null}
+      {postData.isWriter? renderSettingsButton(): null}
       <Grid item xs={12} align="center">
         <Button variant="contained" color="secondary" onClick={() => leaveButtonPressed()}>
             Leave Item

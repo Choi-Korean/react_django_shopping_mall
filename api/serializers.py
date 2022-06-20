@@ -20,4 +20,4 @@ class updateItemSerializer(serializers.ModelSerializer):
     code = serializers.CharField(validators=[])
     class Meta:
         model = Item
-        fields = ('code', 'image', 'listing_or_not')
+        fields = ('code', 'image', 'listing_or_not', 'like_count')

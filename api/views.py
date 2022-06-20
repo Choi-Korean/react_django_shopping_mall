@@ -67,16 +67,18 @@ class CreateItemView(APIView):
             writer = self.request.session.session_key
             image = serializer.data.get('image')
             listing_or_not = serializer.data.get('listing_or_not')
+            like_count = serializer.data.get('like_count')
             queryset = Item.objects.filter(writer=writer)
             if queryset.exists():
                 item = queryset[0]
                 item.image = image
                 item.listing_or_not = listing_or_not
-                item.save(update_fields=['image', 'listing_or_not'])
+                item.like_count = like_count
+                item.save(update_fields=['image', 'listing_or_not', 'like_count'])
                 self.request.session['item_code'] = item.code
                 return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
             else:
-                item = Item(writer=writer, image=image, listing_or_not=listing_or_not)
+                item = Item(writer=writer, image=image, listing_or_not=listing_or_not, like_count=like_count)
                 item.save()
                 self.request.session['item_code'] = item.code
                 return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
@@ -117,6 +119,7 @@ class UpdateItem(APIView):
         if serializer.is_valid():
             image = serializer.data.get('image')
             listing_or_not = serializer.data.get('listing_or_not')
+            like_count = serializer.data.get('like_count')
             code = serializer.data.get('code')
             queryset = Item.objects.filter(code=code)
 
@@ -133,6 +136,7 @@ class UpdateItem(APIView):
             
             item.image = image
             item.listing_or_not = listing_or_not
-            item.save(update_fields=['image', 'listing_or_not'])
+            item.like_count = like_count
+            item.save(update_fields=['image', 'listing_or_not', 'like_count'])
             return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid Data...'}, status=status.HTTP_400_BAD_REQUEST)

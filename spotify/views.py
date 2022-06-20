@@ -1,6 +1,10 @@
 from cmath import exp
+from pstats import Stats
+from unittest import skip
 from urllib import response
 from django.shortcuts import redirect, render
+
+from spotify.models import Vote
 from .credentials import REDIRECT_URI, CLIENT_ID, CLIENT_SECRET
 from rest_framework.views import APIView
 from requests import Request, post
@@ -89,7 +93,7 @@ class CurrentSong(APIView):
                 artist_string += ", "
             name = artist.get('name')
             artist_string += name
-        
+        votes = len(Vote.objects.filter(item=item, song_id=song_id))
         song = {
             'title' : item_song.get('name'),
             'artist' : artist_string,
@@ -97,10 +101,22 @@ class CurrentSong(APIView):
             'time' : progress,
             'image_url': album_cover,
             'is_playing' : is_playing,
+            'votes': votes,
+            'votes_required': item.like_count,
             'id': song_id
         }
 
+        self.update_item_song(item, song_id)
+
         return Response(song, status=status.HTTP_200_OK)
+
+    def update_item_song(self, item, song_id):
+        current_song = item.current_song
+
+        if current_song != song_id: # 노래 바뀐다면
+            item.current_song = song_id
+            item.save(update_fields=['current_song'])
+            votes = Vote.objects.filter(item=item).delete() # 현재까지 있었던 좋아요(=votes) 초기화
 
 class PauseSong(APIView):
     def put(self, response, format=None):
@@ -119,3 +135,21 @@ class PlaySong(APIView):
             play_song(item.writer)
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         return Response({}, status=status.HTTP_403_FORBIDDEN)
+
+class SkipSong(APIView):
+    def post(self, request, format=None):
+        item_code = self.request.session.get('item_code')
+        item = Item.objects.filter(code=item_code)[0]
+        votes = Vote.objects.filter(item=item, song_id=item.current_song)   #현재 아이템, 아이템의 현재노래와 일치하는 votes object filtering
+        votes_needed = item.like_count
+        print(votes)
+
+        # 아이템 주인이 눌렀거나,  좋아요 수보다 vote가 높으면 song skip
+        if self.request.session.session_key == item.writer or len(votes) + 1 >= votes_needed:
+            votes.delete()
+            skip_song(item.writer)
+        else:
+            vote = Vote(user=self.request.session.session_key, item=item, song_id=item.current_song)
+            vote.save()
+
+        return Response({}, status.HTTP_204_NO_CONTENT)

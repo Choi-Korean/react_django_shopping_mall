@@ -20,6 +20,7 @@ class CreateItemPage extends Component{
         listing_or_not: true,
         update: false,
         code: null,
+        like_count: 0,
         updateCallBack: () => {},
     };
 
@@ -31,6 +32,7 @@ class CreateItemPage extends Component{
             code: this.props.code,
             image: this.props.image,
             listing_or_not: this.props.listing_or_not,
+            like_count: this.props.like_count,
             msg: "",
         };
 
@@ -41,6 +43,7 @@ class CreateItemPage extends Component{
         this.handlelisting_or_not = this.handlelisting_or_not.bind(this);
         this.handleUpdateButtonPressed = this.handleUpdateButtonPressed.bind(this); // 와 아니 뭐지? 정확히 똑같은 글씨(코드)인데 색이 노래서 보니까 오류가 있었는데?
         // 그래서 그냥 다시 타이핑 하니까 오류 사라짐... 아니... 하...이거 찾을라고... 몇시간..
+        this.handlelike_count = this.handlelike_count.bind(this);
     }
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
@@ -56,6 +59,13 @@ class CreateItemPage extends Component{
         });
     }
 
+    handlelike_count(e){
+        this.setState({
+            like_count: e.target.value,
+        });
+    }
+
+
     handleCreateButtonPressed(){
         const requestOptions = {
             method: "POST",
@@ -63,6 +73,7 @@ class CreateItemPage extends Component{
             body: JSON.stringify({
                 image: this.state.image,
                 listing_or_not: this.state.listing_or_not,
+                like_count: this.state.like_count,
             }),
         };
         // 오.. 여기서 django create-room api 페이지로 보내는 거네
@@ -78,6 +89,7 @@ class CreateItemPage extends Component{
             body: JSON.stringify({
                 image: this.state.image,
                 listing_or_not: this.state.listing_or_not,
+                like_count: this.state.like_count,
                 code: this.props.code
             }),
         };
@@ -184,6 +196,23 @@ class CreateItemPage extends Component{
                                     상품 이미지를 올려주세요.
                                 </div>
                             </FormHelperText>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <FormControl>
+                        <TextField
+                        // required={true}
+                        type="number"
+                        onChange={this.handlelike_count}
+                        defaultValue={this.state.like_count}
+                        inputProps={{
+                            min: 1,
+                            style: { textAlign: "center" },
+                        }}
+                        />
+                        <FormHelperText>
+                        <div align="center">Votes Required To Skip Song</div>
+                        </FormHelperText>
                     </FormControl>
                 </Grid>
                 {this.props.update
