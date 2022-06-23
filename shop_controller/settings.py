@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import json
+import os
 from pathlib import Path
-from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -139,3 +139,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Actual directory user files go to
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
+
+# # URL used to access the media
+MEDIA_URL = '/images/'

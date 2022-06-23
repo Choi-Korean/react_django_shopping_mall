@@ -108,6 +108,7 @@ export default function Item(props) {
       props.leaveItemCallback();
       navigate("/");
       location.reload() // navigate만 하면 왠지 모르겠는데 자꾸 item.js에 있는 useEffect도 실행이 된다? 그래서 reload 일단 한건데. 아니 그럼 rerender 의미가 없는데
+      // useEffect에서 Unmount? 나 return을 해줘야 하는듯 한데
     });
   };
 

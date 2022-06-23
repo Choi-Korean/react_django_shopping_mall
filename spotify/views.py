@@ -142,13 +142,15 @@ class SkipSong(APIView):
         item = Item.objects.filter(code=item_code)[0]
         votes = Vote.objects.filter(item=item, song_id=item.current_song)   #현재 아이템, 아이템의 현재노래와 일치하는 votes object filtering
         votes_needed = item.like_count
-        print(votes)
 
         # 아이템 주인이 눌렀거나,  좋아요 수보다 vote가 높으면 song skip
         if self.request.session.session_key == item.writer or len(votes) + 1 >= votes_needed:
             votes.delete()
             skip_song(item.writer)
         else:
+            # 아 여기서 Vote 모델 만들어서 db에 저장하는 거 자체가, votes 수 카운팅이 되는거네. 오.. 개쩔엉.
+            # votes 수가 부족하면 바로 일로 와서 votes 객체 만들고(=> votes 수 1 증가) 끝내는 거.
+            # 그리고 노래 자동으로 넘어가거나 skip 하면 db 지우고. 시간 꽤 걸리겠는ㄷ ㅔ그럼? 아닌가
             vote = Vote(user=self.request.session.session_key, item=item, song_id=item.current_song)
             vote.save()
 

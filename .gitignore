@@ -411,3 +411,6 @@ sketch
 
 #spotify
 credentials.py
+
+# static folder
+static/

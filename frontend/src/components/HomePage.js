@@ -5,6 +5,7 @@ import Item from "./Item";
 import { BrowserRouter as Router, Routes, Route, Link, Redirect, Navigate } from "react-router-dom"; // 바꿔야 할 부분
 import {Grid, Button, ButtonGroup, Typography } from '@material-ui/core'
 import {withRouter} from './withRouter';
+import Info from './Info';
 
 export default class HomePage extends Component{
     constructor(props){
@@ -43,6 +44,9 @@ export default class HomePage extends Component{
                         <Button color="primary" to="/buy" component={ Link }>
                             Buy a Item
                         </Button>
+                        <Button color="default" to="/info" component={ Link }>
+                            Info
+                        </Button>
                         <Button color="secondary" to="/create" component={ Link }>
                             Create a Item
                         </Button>
@@ -70,6 +74,7 @@ export default class HomePage extends Component{
                     return this.state.id ? (this.props.navigate(`/item/${this.state.id}`)) : ( this.renderHomePage() )
                 }}></Route> */}
                 <Route path='/buy' element={<BuyItemPage />} />
+                <Route path="/info" element={<Info /> } />
                 <Route path='/create' element={<CreateItemPage />} />
                 <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}
                 />
