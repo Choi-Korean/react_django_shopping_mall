@@ -52,7 +52,6 @@ class BuyItem(APIView):
 
 class CreateItemView(APIView):
     serializer_class = CreateItemSerializer
-
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
@@ -65,7 +64,12 @@ class CreateItemView(APIView):
             print(serializer.errors)
         if serializer.is_valid():
             writer = self.request.session.session_key
-            image = serializer.data.get('image')
+            # image = serializer.data.get('image')
+            # image = request.FILES.get('image') #serializer.data.get('image')
+            print(request.data)
+            image = request.data.get('image')
+            print("이미지")
+            print(image)
             listing_or_not = serializer.data.get('listing_or_not')
             like_count = serializer.data.get('like_count')
             queryset = Item.objects.filter(writer=writer)
@@ -82,7 +86,8 @@ class CreateItemView(APIView):
                 item.save()
                 self.request.session['item_code'] = item.code
                 return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
-            
+        print("아아아아아ㅏ")
+        print(self.serializer_class(data=request.data))
         return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserInItem(APIView):
@@ -107,6 +112,7 @@ class LeaveItem(APIView):
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
 
 class UpdateItem(APIView):
+
     serializer_class = updateItemSerializer
 
     def patch(self, request, format=None):

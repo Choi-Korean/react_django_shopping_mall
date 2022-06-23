@@ -34,6 +34,7 @@ class CreateItemPage extends Component{
             listing_or_not: this.props.listing_or_not,
             like_count: this.props.like_count,
             msg: "",
+            previewURL : "" ,
         };
 
         // 메서드를 클래스에 묶는 것. 이렇게 안하면 뭐 다른 this 가리킬 수도 있다 뭐라 하는데? 뭔소리지
@@ -48,8 +49,20 @@ class CreateItemPage extends Component{
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
     handleImageChanged(e){
+        let image = e.target.files[0];
+        // let form_data = new FormData();
+        // console.log(image);
+        // form_data.append("image_url", image.name);
+        
+        // form_data.append("title", image.title);
+        // form_data.append("description", image.description);
+        // form_data.append("category", image.category);
+
+        // console.log(form_data);
+
         this.setState({
-            image: e.target.value,
+            image: image,
+            // previewURL : reader.readAsDataURL(image),
         });
     }
 
@@ -67,15 +80,23 @@ class CreateItemPage extends Component{
 
 
     handleCreateButtonPressed(){
+
+        const uploadData = new FormData();
+        uploadData.append('image', this.state.image, this.state.image.name);
+        uploadData.append('listing_or_not', this.state.listing_or_not);
+        uploadData.append('like_count', this.state.like_count);
+
+        // for (var key of uploadData.entries()) {
+        //     console.log(key[0] + ', ' + key[1]);
+        // }
+
         const requestOptions = {
             method: "POST",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                image: this.state.image,
-                listing_or_not: this.state.listing_or_not,
-                like_count: this.state.like_count,
-            }),
+            // headers: {'Content-Type': 'application/json'},
+            body: uploadData,
         };
+
+        
         // 오.. 여기서 django create-room api 페이지로 보내는 거네
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
@@ -83,15 +104,23 @@ class CreateItemPage extends Component{
     }
 
     handleUpdateButtonPressed(){
+
+        const uploadData = new FormData();
+        // uploadData.append('image', this.state.image, this.state.image.name);
+        uploadData.append('listing_or_not', this.state.listing_or_not);
+        uploadData.append('like_count', this.state.like_count);
+        uploadData.append('code', this.props.code);
+
         const requestOptions = {
             method: "PATCH",
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                image: this.state.image,
-                listing_or_not: this.state.listing_or_not,
-                like_count: this.state.like_count,
-                code: this.props.code
-            }),
+            // headers: {'Content-Type': 'application/json'},
+            body: uploadData,
+            // body: JSON.stringify({
+            //     image: this.state.image,
+            //     listing_or_not: this.state.listing_or_not,
+            //     like_count: this.state.like_count,
+            //     code: this.props.code
+            // }),
         };
         fetch("/api/update-item/", requestOptions)
             .then((response) => {
@@ -143,7 +172,7 @@ class CreateItemPage extends Component{
 
         // spacing은 grid 안의 item간의 간격. 1은 8pixel
         return (
-        <Grid container spacing={1}>
+            <Grid container spacing={1}>
             <Grid item xs={12} align="center">
                 <Collapse in={this.state.msg != ""}>
                     {(<Alert onClose={() => {this.setState({msg: ""}); location.reload();}}>{this.state.msg}</Alert>)}
@@ -151,6 +180,7 @@ class CreateItemPage extends Component{
             </Grid>
             <Grid item xs={12} align="center">
                 <Typography component="h4" variant="h4">
+                    {/* {profile_preview} */}
                     {title}
                 </Typography>
             </Grid>
@@ -181,8 +211,14 @@ class CreateItemPage extends Component{
                 </FormControl>
             </Grid>
                 <Grid item xs={12} align="center">
-                    <FormControl>
-                        <TextField
+                    <FormControl type="file">
+                            <input type='file' 
+                                accept="image/jpeg,image/png,image/gif" 
+                                name='image' 
+                                onChange={(e) => this.handleImageChanged(e)}>
+                                {/* defaultValue={this.state.image} */}
+                            </input>
+                        {/* <TextField
                                     required={true}
                                     defaultValue={this.state.image}
                                     type="image"
@@ -190,7 +226,7 @@ class CreateItemPage extends Component{
                                     inputProps={{
                                         style: {textAlign: "center"},
                                     }}
-                            />
+                            /> */}
                             <FormHelperText>
                                 <div align="center">
                                     상품 이미지를 올려주세요.
