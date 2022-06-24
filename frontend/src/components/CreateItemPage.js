@@ -45,6 +45,7 @@ class CreateItemPage extends Component{
         this.handleUpdateButtonPressed = this.handleUpdateButtonPressed.bind(this); // 와 아니 뭐지? 정확히 똑같은 글씨(코드)인데 색이 노래서 보니까 오류가 있었는데?
         // 그래서 그냥 다시 타이핑 하니까 오류 사라짐... 아니... 하...이거 찾을라고... 몇시간..
         this.handlelike_count = this.handlelike_count.bind(this);
+        this.getImage = this.getImage.bind(this);
     }
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
@@ -59,11 +60,12 @@ class CreateItemPage extends Component{
         // form_data.append("category", image.category);
 
         // console.log(form_data);
-
+        
         this.setState({
             image: image,
             // previewURL : reader.readAsDataURL(image),
         });
+        console.log(image);
     }
 
     handlelisting_or_not(e){
@@ -85,10 +87,11 @@ class CreateItemPage extends Component{
         uploadData.append('image', this.state.image, this.state.image.name);
         uploadData.append('listing_or_not', this.state.listing_or_not);
         uploadData.append('like_count', this.state.like_count);
-
+        
         // for (var key of uploadData.entries()) {
-        //     console.log(key[0] + ', ' + key[1]);
-        // }
+        //         console.log(key[0] + ', ' + key[1]);
+        //     }
+        // console.log(uploadData('image'))
 
         const requestOptions = {
             method: "POST",
@@ -106,7 +109,7 @@ class CreateItemPage extends Component{
     handleUpdateButtonPressed(){
 
         const uploadData = new FormData();
-        // uploadData.append('image', this.state.image, this.state.image.name);
+        uploadData.append('image', this.state.image, this.state.image.name);
         uploadData.append('listing_or_not', this.state.listing_or_not);
         uploadData.append('like_count', this.state.like_count);
         uploadData.append('code', this.props.code);
@@ -167,6 +170,14 @@ class CreateItemPage extends Component{
         );
     }
 
+    getImage(){
+        return(
+            <Grid item align="center" xs={4}>
+                    <img src={this.state.image} height="100%" width="100%" />
+            </Grid>
+        )
+    }
+
     render(){
         const title = this.props.update? "Update Item" : "Create a Item"
 
@@ -210,6 +221,10 @@ class CreateItemPage extends Component{
                     </RadioGroup>
                 </FormControl>
             </Grid>
+                <Grid item xs={12} align="center">
+                    {this.state.image != null?this.getImage():null}
+                </Grid>
+
                 <Grid item xs={12} align="center">
                     <FormControl type="file">
                             <input type='file' 

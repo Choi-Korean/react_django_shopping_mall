@@ -123,7 +123,7 @@ class UpdateItem(APIView):
         if not serializer.is_valid():
             print(serializer.errors)
         if serializer.is_valid():
-            image = serializer.data.get('image')
+            image = request.data.get('image')
             listing_or_not = serializer.data.get('listing_or_not')
             like_count = serializer.data.get('like_count')
             code = serializer.data.get('code')
@@ -146,3 +146,24 @@ class UpdateItem(APIView):
             item.save(update_fields=['image', 'listing_or_not', 'like_count'])
             return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid Data...'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ItemList(generics.ListCreateAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+
+
+    def get(self, request, format=None):
+        # Note the use of `get_queryset()` instead of `self.queryset`
+        queryset = self.get_queryset()
+        serializer = ItemSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response(serializer.data)
+
+    #     if len(item) > 0:
+    #         data = ItemSerializer(item[0]).data
+    #         # 이건 강의에서 현재 session이 host의 session과 일치하는지 확인하고, 일치하면 현재 session을 담는거고, 아니면 걍 냅두는?
+    #         # 처음 보는 코드라 남겨봄
+    #         data['is_writer'] = self.request.session.session_key == item[0].writer
+    #         return Response(data, status=status.HTTP_200_OK)
+    #     return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
+    # return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)

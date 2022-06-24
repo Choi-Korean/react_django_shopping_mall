@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';   // react-router-dom v6부터는 이걸로 params 가져와야 된대.. 아 이거때문에 40분 날렸네. 근데 안되네 ㅋㅋ
 // function 형으로 바꿔야 할듯.. class에서는 useParams가 안먹히는거 같어
  // https://github.com/remix-run/react-router/issues/8146
-import { Grid, Button, Typography } from '@material-ui/core'
+import { Grid, Button, Typography, Card } from '@material-ui/core'
 import { useNavigate } from 'react-router-dom';
 import CreateItemPage from './CreateItemPage';
 import MusicPlayer from './MusicPlayer';
@@ -165,6 +165,11 @@ export default function Item(props) {
         </Typography>
       </Grid>
       <MusicPlayer {...song}/>
+      <Card align="center">
+        <Grid item xs={12} align="center">
+            <img src={postData.image} height="60%" width="100%" />
+        </Grid>
+      </Card>
       {postData.isWriter? renderSettingsButton(): null}
       <Grid item xs={12} align="center">
         <Button variant="contained" color="secondary" onClick={() => leaveButtonPressed()}>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ItemView, CreateItemView, GetItem, BuyItem, UserInItem, LeaveItem, UpdateItem
+from .views import *
 
 urlpatterns = [
     path('', ItemView.as_view()),
@@ -8,5 +8,6 @@ urlpatterns = [
     path('buy-item/', BuyItem.as_view()),
     path('user-in-item/', UserInItem.as_view()),
     path('leave-item/', LeaveItem.as_view()),
-    path('update-item/', UpdateItem.as_view())
+    path('update-item/', UpdateItem.as_view()),
+    path('item-list/', ItemList.as_view()),
 ]
