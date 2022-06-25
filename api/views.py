@@ -1,3 +1,4 @@
+import datetime
 from logging import root
 from os import stat
 import queue
@@ -156,6 +157,13 @@ class ItemList(generics.ListCreateAPIView):
         # Note the use of `get_queryset()` instead of `self.queryset`
         queryset = self.get_queryset()
         serializer = ItemSerializer(queryset, many=True)
+
+        # 날짜 변환 코드
+        format = '%Y-%m-%dT%H:%M:%S.%fZ'
+        format_to = "%Y-%m-%d %H시%M분"
+        for i in serializer.data:
+            i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(serializer.data)
 

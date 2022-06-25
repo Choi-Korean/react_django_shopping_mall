@@ -7,6 +7,8 @@ import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext"
 import { Link }from "react-router-dom";
 import Header from './Header';
+import Product from './Product';
+import './Info.css'
 
 // ENM ? 어쨌든 페이지 값 저장해놓는거
 const pages = {
@@ -43,11 +45,11 @@ export default function Info(props) {
 
     const getItems = () => {
         fetch('/api/item-list').then((response) => {
-          if(!response.ok){
-            return{};
-          }else{
+            if(!response.ok){
+                return{};
+            }else{
             return response.json();
-          }
+            }
         }).then(data => {
             const new_items = [];
             for (var key of data) {
@@ -65,67 +67,84 @@ export default function Info(props) {
             // initialState.created_at = data.created_at;
         }
         );
-      }
+    }
 
     const renderItemList = () => {
         if(items.length == 0){
             getItems();
         }
         console.log(items);
-        const item_list = items.map((item) =>
-            <Card>
-                <Grid container spacing={1}>
-                    <Grid item xs={12} align="center">
-                        <Typography variant="h4" componoet="h4">
-                        COde: {item.code}
-                        </Typography>
-                    </Grid>
-                    {/* <MusicPlayer {...song}/> */}
-                    <Card align="center">
-                        <Grid item xs={12} align="center">
-                            <img src={item.image} height="100%" width="100%" />
-                        </Grid>
-                    </Card>
-                </Grid>
-            </Card>
+        let index = 1;
+
+        {/* <img src={item.image} className='info_image' /> */}           
+        const item_list = items.map((item) =>    
+            <div className="info_row">
+                <Product
+                    id={index ++}
+                    code={item.code}
+                    created_at={item.created_at}
+                    listing_or_not={item.listing_or_not}
+                    image={item.image}
+                    like_count={item.like_count}/>
+            </div>
+            
+        
+            // <Card>
+            //     <Grid container spacing={1}>
+            //         <Grid item xs={12} align="center">
+            //             <Typography variant="h4" componoet="h4">
+            //             COde: {item.code}
+            //             </Typography>
+            //         </Grid>
+            //         {/* <MusicPlayer {...song}/> */}
+            //         <Card align="center">
+            //             <Grid item xs={12} align="center">
+            //                 <img src={item.image} className='info_image' />
+            //             </Grid>
+            //         </Card>
+            //     </Grid>
+            // </Card>
         );
-        return <ul>{item_list}</ul>;
+
+        return <div className="item_container">{item_list}</div>;
     }
     
     return (
-        <Grid container spacing={4}>
-        {/* // <Grid container spacing={10}> */}
-        {/* <Button color="secondary" variant="contained" onClick={() => renderItemList()}>
-            새로고침
-        </Button> */}
-            <Grid item xs={12} align="center">
-                    <Header />
+        // <div className="info">
+            <Grid container spacing={4}>
+            {/* <Button color="secondary" variant="contained" onClick={() => renderItemList()}>
+                새로고침
+            </Button> */}
+                <Grid item xs={12} align="center">
+                        <Header />
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <Typography component="h4" variant="h4">
+                        What do you want to buy?
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <Typography variant="body1">
+                        { page === pages.JOIN? joinInfo() : createInfo() }
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <IconButton onClick={() => {
+                        page === pages.CREATE ? setPage(pages.JOIN) : setPage(pages.CREATE);
+                    }}>
+                        {page === pages.CREATE ? <NavigateBeforeIcon/>: <NavigateNextIcon />}
+                    </IconButton>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <Button color="secondary" variant="contained" to="/" component={Link}>
+                        Back
+                    </Button>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    {renderItemList()}
+                </Grid>
             </Grid>
-            <Grid item xs={12} align="center">
-                <Typography component="h4" variant="h4">
-                    What do you want to buy?
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Typography variant="body1">
-                    { page === pages.JOIN? joinInfo() : createInfo() }
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <IconButton onClick={() => {
-                    page === pages.CREATE ? setPage(pages.JOIN) : setPage(pages.CREATE);
-                }}>
-                    {page === pages.CREATE ? <NavigateBeforeIcon/>: <NavigateNextIcon />}
-                </IconButton>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Button color="secondary" variant="contained" to="/" component={Link}>
-                    Back
-                </Button>
-            </Grid>
-            {renderItemList()}
-        {/* </Grid> */}
-        </Grid>
+        // </div>
     );
 }
 
