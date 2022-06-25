@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { TextField, Button, Grid, Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import {withRouter} from './withRouter';
+import Header from './Header';
 
 class BuyItemPage extends Component{
     constructor(props){
@@ -17,6 +18,9 @@ class BuyItemPage extends Component{
     render(){
         return (
             <Grid container spacing={1}>
+                <Grid item xs={12} align="center">
+                    <Header />
+                </Grid>
                 <Grid item xs={12} align="center">
                     <Typography variant="h4" component="h4">
                         Buy a Item

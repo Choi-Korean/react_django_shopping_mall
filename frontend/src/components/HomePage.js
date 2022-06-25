@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Redirect, Navigate } from
 import {Grid, Button, ButtonGroup, Typography } from '@material-ui/core'
 import {withRouter} from './withRouter';
 import Info from './Info';
+import Header from './Header';
 
 export default class HomePage extends Component{
     constructor(props){
@@ -32,7 +33,10 @@ export default class HomePage extends Component{
     
     renderHomePage(){
         return (
-            <Grid container spacing={3}>
+            <Grid container spacing={4}>
+                <Grid item xs={12} align="center">
+                    <Header />
+                </Grid>
                 <Grid item xs={12} align="center">
                     <Typography variant='h3' compact="h3">
                         House Party

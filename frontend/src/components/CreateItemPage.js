@@ -13,6 +13,7 @@ import { FormControl } from '@material-ui/core';
 import {withRouter} from './withRouter';
 import { Collapse } from '@material-ui/core';
 import Alert from "@material-ui/lab/Alert";
+import Header from './Header';
 
 class CreateItemPage extends Component{
     static defaultProps = {
@@ -184,6 +185,9 @@ class CreateItemPage extends Component{
         // spacing은 grid 안의 item간의 간격. 1은 8pixel
         return (
             <Grid container spacing={1}>
+            <Grid item xs={12} align="center">
+                    <Header />
+            </Grid>
             <Grid item xs={12} align="center">
                 <Collapse in={this.state.msg != ""}>
                     {(<Alert onClose={() => {this.setState({msg: ""}); location.reload();}}>{this.state.msg}</Alert>)}

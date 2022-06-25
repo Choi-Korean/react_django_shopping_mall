@@ -6,6 +6,7 @@ import { Grid, Button, Typography, IconButton, Card } from "@material-ui/core";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext"
 import { Link }from "react-router-dom";
+import Header from './Header';
 
 // ENM ? 어쨌든 페이지 값 저장해놓는거
 const pages = {
@@ -22,7 +23,7 @@ export default function Info(props) {
         showSettings: false,
         like_count: 0,
         created_at: null,
-      }
+    }
     
     const [items, setItems] = useState([]);
 
@@ -92,11 +93,14 @@ export default function Info(props) {
     }
     
     return (
-        <div>
+        <Grid container spacing={4}>
         {/* // <Grid container spacing={10}> */}
         {/* <Button color="secondary" variant="contained" onClick={() => renderItemList()}>
             새로고침
         </Button> */}
+            <Grid item xs={12} align="center">
+                    <Header />
+            </Grid>
             <Grid item xs={12} align="center">
                 <Typography component="h4" variant="h4">
                     What do you want to buy?
@@ -121,7 +125,7 @@ export default function Info(props) {
             </Grid>
             {renderItemList()}
         {/* </Grid> */}
-        </div>
+        </Grid>
     );
 }
 

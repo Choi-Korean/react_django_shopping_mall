@@ -6,6 +6,7 @@ import { Grid, Button, Typography, Card } from '@material-ui/core'
 import { useNavigate } from 'react-router-dom';
 import CreateItemPage from './CreateItemPage';
 import MusicPlayer from './MusicPlayer';
+import Header from './Header';
 
 // 에러 수정 필요 : id 세션제거
 // (1) 두개의 홈페이지에서 같은 id 페이지 띄우고, 하나에서 session 제거해서 초기페이지로 이동시, 다른 페이지도 새로고침시 이동되어야 하는데 안됨.
@@ -159,6 +160,9 @@ export default function Item(props) {
   }
   return (
     <Grid container spacing={1}>
+      <Grid item xs={12} align="center">
+        <Header />
+      </Grid>
       <Grid item xs={12} align="center">
         <Typography variant="h4" componoet="h4">
           COde: {code}
