@@ -74,13 +74,13 @@ export default function Info(props) {
             getItems();
         }
         console.log(items);
-        let index = 1;
+        // let index = 1;   //추후 index별 listing 배열 다르게 적용 예정
 
         {/* <img src={item.image} className='info_image' /> */}           
         const item_list = items.map((item) =>    
             <div className="info_row">
                 <Product
-                    id={index ++}
+                    // id={index ++}
                     code={item.code}
                     created_at={item.created_at}
                     listing_or_not={item.listing_or_not}
