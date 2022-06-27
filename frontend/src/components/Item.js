@@ -161,9 +161,6 @@ export default function Item(props) {
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
-        <Header />
-      </Grid>
-      <Grid item xs={12} align="center">
         <Typography variant="h4" componoet="h4">
           COde: {code}
         </Typography>

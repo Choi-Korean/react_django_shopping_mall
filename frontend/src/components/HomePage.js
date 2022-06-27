@@ -7,6 +7,8 @@ import {Grid, Button, ButtonGroup, Typography } from '@material-ui/core'
 import {withRouter} from './withRouter';
 import Info from './Info';
 import Header from './Header';
+import CartItem from './CartItem';
+import Cart from './Cart';
 
 export default class HomePage extends Component{
     constructor(props){
@@ -68,6 +70,7 @@ export default class HomePage extends Component{
     
     render(){ // slash는 exact path로 처리해서 /buy 등이 일치하지 않게 처리
         return (<Router>
+            <Header />
             <Routes> 
                 {/* id 변경사항이 있다면 (? : if), item/id 주소로 이동시키고, 아니면 그냥 홈페이지 rendering */}
                 <Route path='/*' element={
@@ -80,8 +83,8 @@ export default class HomePage extends Component{
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path="/info" element={<Info /> } />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}
-                />
+                <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}/>
+                <Route path='/cart' element={<Cart />}/>
             </Routes>
         </Router>);
     }

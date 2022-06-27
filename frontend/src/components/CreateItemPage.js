@@ -186,9 +186,6 @@ class CreateItemPage extends Component{
         return (
             <Grid container spacing={1}>
             <Grid item xs={12} align="center">
-                    <Header />
-            </Grid>
-            <Grid item xs={12} align="center">
                 <Collapse in={this.state.msg != ""}>
                     {(<Alert onClose={() => {this.setState({msg: ""}); location.reload();}}>{this.state.msg}</Alert>)}
                 </Collapse>

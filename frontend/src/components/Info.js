@@ -116,9 +116,6 @@ export default function Info(props) {
                 새로고침
             </Button> */}
                 <Grid item xs={12} align="center">
-                        <Header />
-                </Grid>
-                <Grid item xs={12} align="center">
                     <Typography component="h4" variant="h4">
                         What do you want to buy?
                     </Typography>
