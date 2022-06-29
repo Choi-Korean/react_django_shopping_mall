@@ -1,4 +1,70 @@
+.product_container{
+    display:flex;
+    flex-direction: row;
+    flex-wrap : wrap;
+    width: 100%;
+}
+
 .product {
+    width: 20%; /* 20%로 주어, 상품 5개당 한 줄로 출력되게*/
+    height: 100%;
+    margin-bottom: 4%;
+    /*border: 1px solid black;*/
+}
+
+.product_img_div {
+    text-align: center;
+}
+
+.product_img {
+    max-width: 95%;
+    max-height: 100%;
+    max-height: 400px;
+}
+
+.product_title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 4%;
+}
+
+.product_des {
+    font-size: 0.8rem;
+    margin: 2% 3% 2% 4%;
+}
+
+.product_mon {
+    font-size: 1rem;
+    margin: 2% 3% 1% 4%;
+}
+
+.product_link_div {
+    text-align: center;
+}
+
+.product_link {
+    position: inherit;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-decoration: none;
+    background: #0B5ED9;
+    color: white;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+.product_link_2 {
+    position: inherit;
+    font-size: 1.2rem;
+    font-weight: 500;
+    text-decoration: none;
+    background: #f50057;
+    color: white;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+/* .product {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,9 +80,9 @@
 .product_rating {
     display: flex;
 }
-.product > img {
-    /* ">" product js 안에 img라는 하위 태그를 의미하는거임 */
-    max-height: 200px;
+.product > img { */
+/* ">" product js 안에 img라는 하위 태그를 의미하는거임 */
+/* max-height: 200px;
     width: 100%;
     object-fit: contain;
     margin-bottom: 15px;
@@ -34,4 +100,4 @@
 .product_info {
     height: 100px;
     margin-bottom: 15px;
-}
+} */

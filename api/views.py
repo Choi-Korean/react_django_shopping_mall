@@ -28,6 +28,7 @@ class GetItem(APIView):
                 # 이건 강의에서 현재 session이 host의 session과 일치하는지 확인하고, 일치하면 현재 session을 담는거고, 아니면 걍 냅두는?
                 # 처음 보는 코드라 남겨봄
                 data['is_writer'] = self.request.session.session_key == item[0].writer
+                data['created_at'] = convertDate(data)
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -159,10 +160,7 @@ class ItemList(generics.ListCreateAPIView):
         serializer = ItemSerializer(queryset, many=True)
 
         # 날짜 변환 코드
-        format = '%Y-%m-%dT%H:%M:%S.%fZ'
-        format_to = "%Y-%m-%d %H시%M분"
-        for i in serializer.data:
-            i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
+        serializer = convertDate(serializer)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response(serializer.data)
@@ -175,3 +173,14 @@ class ItemList(generics.ListCreateAPIView):
     #         return Response(data, status=status.HTTP_200_OK)
     #     return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
     # return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
+
+def convertDate(serializer):
+    # 날짜 변환 코드
+    format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    format_to = "%Y-%m-%d %H시%M분"
+    try:
+        for i in serializer.data:
+            i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
+        return serializer
+    except:
+        return datetime.datetime.strftime(datetime.datetime.strptime(serializer['created_at'], format), format_to)

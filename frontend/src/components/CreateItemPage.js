@@ -10,24 +10,24 @@ import { Link, Router } from 'react-router-dom';
 import { Radio } from '@material-ui/core';
 import { RadioGroup } from '@material-ui/core';
 import { FormControl } from '@material-ui/core';
-import {withRouter} from './withRouter';
+import { withRouter } from './withRouter';
 import { Collapse } from '@material-ui/core';
 import Alert from "@material-ui/lab/Alert";
 import Header from './Header';
 
-class CreateItemPage extends Component{
+class CreateItemPage extends Component {
     static defaultProps = {
         image: null,
         listing_or_not: true,
         update: false,
         code: null,
         like_count: 0,
-        updateCallBack: () => {},
+        updateCallBack: () => { },
     };
 
-    constructor(props){
+    constructor(props) {
         super(props);
-        
+
         // 이미지, 판매여부 state로 생성하기. 비동기 작업 위해?
         this.state = {
             code: this.props.code,
@@ -35,7 +35,8 @@ class CreateItemPage extends Component{
             listing_or_not: this.props.listing_or_not,
             like_count: this.props.like_count,
             msg: "",
-            previewURL : "" ,
+            detailImageFile: null,
+            detailImageUrl: null,
         };
 
         // 메서드를 클래스에 묶는 것. 이렇게 안하면 뭐 다른 this 가리킬 수도 있다 뭐라 하는데? 뭔소리지
@@ -47,48 +48,62 @@ class CreateItemPage extends Component{
         // 그래서 그냥 다시 타이핑 하니까 오류 사라짐... 아니... 하...이거 찾을라고... 몇시간..
         this.handlelike_count = this.handlelike_count.bind(this);
         this.getImage = this.getImage.bind(this);
+        this.setImageFromFile = this.setImageFromFile.bind(this);
     }
+    // set file reader function
+    setImageFromFile({ file, setImageUrl }) {
+        let reader = new FileReader();
+        reader.onload = function () {
+            setImageUrl({ result: reader.result });
+        };
+        reader.readAsDataURL(file);
+    };
 
     // 이미지나 상품판매여부 변경사항 있으면 자동 재실행되게 set 메서드 생성. 채팅방때 채팅 생성이랑 같은 것
-    handleImageChanged(e){
+    handleImageChanged(e) {
         let image = e.target.files[0];
         // let form_data = new FormData();
         // console.log(image);
         // form_data.append("image_url", image.name);
-        
+
         // form_data.append("title", image.title);
         // form_data.append("description", image.description);
         // form_data.append("category", image.category);
 
         // console.log(form_data);
-        
+
         this.setState({
             image: image,
-            // previewURL : reader.readAsDataURL(image),
         });
+
+        this.setImageFromFile({
+            file: image,
+            setImageUrl: ({ result }) => this.setState({ detailImageFile: image, detailImageUrl: result })
+        });
+
         console.log(image);
     }
 
-    handlelisting_or_not(e){
+    handlelisting_or_not(e) {
         this.setState({
-            listing_or_not: e.target.value === "true"? true:false,
+            listing_or_not: e.target.value === "true" ? true : false,
         });
     }
 
-    handlelike_count(e){
+    handlelike_count(e) {
         this.setState({
             like_count: e.target.value,
         });
     }
 
 
-    handleCreateButtonPressed(){
+    handleCreateButtonPressed() {
 
         const uploadData = new FormData();
         uploadData.append('image', this.state.image, this.state.image.name);
         uploadData.append('listing_or_not', this.state.listing_or_not);
         uploadData.append('like_count', this.state.like_count);
-        
+
         // for (var key of uploadData.entries()) {
         //         console.log(key[0] + ', ' + key[1]);
         //     }
@@ -100,14 +115,14 @@ class CreateItemPage extends Component{
             body: uploadData,
         };
 
-        
+
         // 오.. 여기서 django create-room api 페이지로 보내는 거네
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
             .then((data) => this.props.navigate("/item/" + data.code));
     }
 
-    handleUpdateButtonPressed(){
+    handleUpdateButtonPressed() {
 
         const uploadData = new FormData();
         uploadData.append('image', this.state.image, this.state.image.name);
@@ -128,11 +143,11 @@ class CreateItemPage extends Component{
         };
         fetch("/api/update-item/", requestOptions)
             .then((response) => {
-                if(response.ok){
+                if (response.ok) {
                     this.setState({
                         msg: "Item Updated Succesfully!"
                     });
-                }else{
+                } else {
                     this.setState({
                         msg: "Error Updating Item..."
                     });
@@ -143,7 +158,7 @@ class CreateItemPage extends Component{
             });
     }
 
-    renderCreateButtons(){
+    renderCreateButtons() {
         return (
             // jsx expression은 반드시 1개의 upper level parent에 쌓여있어야 함.
             <Grid container spacing={1}>
@@ -161,8 +176,8 @@ class CreateItemPage extends Component{
         );
     }
 
-    renderUpdateButtons(){
-        return(
+    renderUpdateButtons() {
+        return (
             <Grid item xs={12} align="center">
                 <Button color="primary" variant="contained" onClick={() => this.handleUpdateButtonPressed()}>
                     Update Item
@@ -171,69 +186,76 @@ class CreateItemPage extends Component{
         );
     }
 
-    getImage(){
-        return(
+    getImage() {
+        return (
             <Grid item align="center" xs={4}>
-                    <img src={this.state.image} height="100%" width="100%" />
+                <img src={this.state.image} height="100%" width="100%" />
             </Grid>
         )
     }
 
-    render(){
-        const title = this.props.update? "Update Item" : "Create a Item"
+    render() {
+        const title = this.props.update ? "Update Item" : "Create a Item"
 
         // spacing은 grid 안의 item간의 간격. 1은 8pixel
         return (
             <Grid container spacing={1}>
-            <Grid item xs={12} align="center">
-                <Collapse in={this.state.msg != ""}>
-                    {(<Alert onClose={() => {this.setState({msg: ""}); location.reload();}}>{this.state.msg}</Alert>)}
-                </Collapse>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Typography component="h4" variant="h4">
-                    {/* {profile_preview} */}
-                    {title}
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <FormControl component="fieldset">
-                    <FormHelperText>
-                        <div align='center'>
-                            Control of state
-                        </div>
-                    </FormHelperText>
-                    <RadioGroup
-                        row
-                        defaultValue={this.props.listing_or_not.toString()}
-                        onChange={this.handlelisting_or_not}>
-                        <FormControlLabel
-                            value="true"
-                            control={<Radio color="primary" />}
-                            label="판매중"
-                            labelPlacement="bottom"
-                        />
-                        <FormControlLabel
-                            value="false"
-                            control={<Radio color="secondary" />}
-                            label="재고소진"
-                            labelPlacement="bottom"
-                        />
-                    </RadioGroup>
-                </FormControl>
-            </Grid>
                 <Grid item xs={12} align="center">
-                    {this.state.image != null?this.getImage():null}
+                    <Collapse in={this.state.msg != ""}>
+                        {(<Alert onClose={() => { this.setState({ msg: "" }); location.reload(); }}>{this.state.msg}</Alert>)}
+                    </Collapse>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <Typography component="h4" variant="h4">
+                        {/* {profile_preview} */}
+                        {title}
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    <FormControl component="fieldset">
+                        <FormHelperText>
+                            <div align='center'>
+                                Control of state
+                            </div>
+                        </FormHelperText>
+                        <RadioGroup
+                            row
+                            defaultValue={this.props.listing_or_not.toString()}
+                            onChange={this.handlelisting_or_not}>
+                            <FormControlLabel
+                                value="true"
+                                control={<Radio color="primary" />}
+                                label="판매중"
+                                labelPlacement="bottom"
+                            />
+                            <FormControlLabel
+                                value="false"
+                                control={<Radio color="secondary" />}
+                                label="재고소진"
+                                labelPlacement="bottom"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12} align="center">
+                    {this.state.image != null ? this.getImage() : null}
                 </Grid>
 
                 <Grid item xs={12} align="center">
+                    {this.state.detailImageFile && (
+                        <div className="image_area">
+                            <img src={this.state.detailImageUrl} alt={this.state.detailImageFile.name} />
+                        </div>
+                    )}
                     <FormControl type="file">
-                            <input type='file' 
-                                accept="image/jpeg,image/png,image/gif" 
-                                name='image' 
-                                onChange={(e) => this.handleImageChanged(e)}>
-                                {/* defaultValue={this.state.image} */}
-                            </input>
+                        <input
+                            id='CreateItemPageImg'
+                            type='file'
+                            accept="image/jpeg,image/png,image/gif"
+                            name='image'
+                            onChange={(e) => this.handleImageChanged(e)}>
+                            {/* defaultValue={this.state.image} */}
+                        </input>
                         {/* <TextField
                                     required={true}
                                     defaultValue={this.state.image}
@@ -243,35 +265,35 @@ class CreateItemPage extends Component{
                                         style: {textAlign: "center"},
                                     }}
                             /> */}
-                            <FormHelperText>
-                                <div align="center">
-                                    상품 이미지를 올려주세요.
-                                </div>
-                            </FormHelperText>
+                        <FormHelperText>
+                            <div align="center">
+                                상품 이미지를 올려주세요.
+                            </div>
+                        </FormHelperText>
                     </FormControl>
                 </Grid>
                 <Grid item xs={12} align="center">
                     <FormControl>
                         <TextField
-                        // required={true}
-                        type="number"
-                        onChange={this.handlelike_count}
-                        defaultValue={this.state.like_count}
-                        inputProps={{
-                            min: 1,
-                            style: { textAlign: "center" },
-                        }}
+                            // required={true}
+                            type="number"
+                            onChange={this.handlelike_count}
+                            defaultValue={this.state.like_count}
+                            inputProps={{
+                                min: 1,
+                                style: { textAlign: "center" },
+                            }}
                         />
                         <FormHelperText>
-                        <div align="center">Votes Required To Skip Song</div>
+                            <div align="center">Max item</div>
                         </FormHelperText>
                     </FormControl>
                 </Grid>
                 {this.props.update
-                ?this.renderUpdateButtons()
-                :this.renderCreateButtons()}
-        </Grid>
-        ); 
+                    ? this.renderUpdateButtons()
+                    : this.renderCreateButtons()}
+            </Grid>
+        );
     }
 }
 

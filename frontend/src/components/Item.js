@@ -6,7 +6,8 @@ import { Grid, Button, Typography, Card } from '@material-ui/core'
 import { useNavigate } from 'react-router-dom';
 import CreateItemPage from './CreateItemPage';
 import MusicPlayer from './MusicPlayer';
-import Header from './Header';
+import './Item.css';
+import Product from './Product';
 
 // 에러 수정 필요 : id 세션제거
 // (1) 두개의 홈페이지에서 같은 id 페이지 띄우고, 하나에서 session 제거해서 초기페이지로 이동시, 다른 페이지도 새로고침시 이동되어야 하는데 안됨.
@@ -19,7 +20,8 @@ export default function Item(props) {
     listing_or_not: true,
     showSettings: false,
     isWriter: false,
-    like_count: 0
+    like_count: 0,
+    created_at: null,
     // spotifyAuthenticated: false,  // 초기 인증값 false
   }
   const [postData, setPostData] = useState(initialState);
@@ -27,6 +29,7 @@ export default function Item(props) {
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const [song, setSong] = useState({});
   const navigate = useNavigate();
+  const new_file = null;
 
   useEffect(() => {
     fetch("/api/get-item" + "?code=" + code)
@@ -41,7 +44,8 @@ export default function Item(props) {
           image: data.image,
           listing_or_not: data.listing_or_not,
           isWriter: data.is_writer,
-          like_count: data.like_count
+          like_count: data.like_count,
+          created_at: data.created_at
         })
       });
       if(postData.isWriter){
@@ -162,15 +166,25 @@ export default function Item(props) {
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
         <Typography variant="h4" componoet="h4">
-          COde: {code}
+          상품코드: {code}
         </Typography>
       </Grid>
-      <MusicPlayer {...song}/>
-      <Card align="center">
+      <Grid item xs={12} align="center">
+        <MusicPlayer {...song}/>
+      </Grid>
+      <Grid item xs={12} align="center">
+        <Product
+                  code={code}
+                  created_at={postData.created_at}
+                  listing_or_not={postData.listing_or_not}
+                  image={postData.image?postData.image:new_file}
+                  like_count={postData.like_count}/>
+      </Grid>
+      {/* <Card align="center">
         <Grid item xs={12} align="center">
-            <img src={postData.image} height="60%" width="100%" />
+            <img src={postData.image} className="product_img" />
         </Grid>
-      </Card>
+      </Card> */}
       {postData.isWriter? renderSettingsButton(): null}
       <Grid item xs={12} align="center">
         <Button variant="contained" color="secondary" onClick={() => leaveButtonPressed()}>
