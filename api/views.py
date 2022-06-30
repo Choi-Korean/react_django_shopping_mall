@@ -1,15 +1,27 @@
 import datetime
+from http import server
 from logging import root
 from os import stat
 import queue
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
-from .models import Item
-from .serializers import ItemSerializer, CreateItemSerializer, updateItemSerializer
+from .models import Cart, Item
+from .serializers import CartSerializer, ItemSerializer, CreateItemSerializer, updateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+
+def convertDate(serializer):
+    # 날짜 변환 코드
+    format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    format_to = "%Y-%m-%d %H시%M분"
+    try:
+        for i in serializer.data:
+            i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
+        return serializer
+    except:
+        return datetime.datetime.strftime(datetime.datetime.strptime(serializer['created_at'], format), format_to)
 
 class ItemView(generics.CreateAPIView):
     queryset = Item.objects.all()
@@ -174,13 +186,78 @@ class ItemList(generics.ListCreateAPIView):
     #     return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
     # return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
 
-def convertDate(serializer):
-    # 날짜 변환 코드
-    format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    format_to = "%Y-%m-%d %H시%M분"
-    try:
-        for i in serializer.data:
-            i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
-        return serializer
-    except:
-        return datetime.datetime.strftime(datetime.datetime.strptime(serializer['created_at'], format), format_to)
+class GetCart(APIView):
+    serializer_class = CartSerializer
+    lookup_url_kwarg = 'writer'
+    def get(self, request, format=None):
+        writer = request.GET.get(self.lookup_url_kwarg)
+        cart = Cart.objects.filter(writer=writer)
+        if len(cart) > 0:
+            serializer = CartSerializer(cart, many=True)
+            print(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+# 아 delete method는 뭐 request로 데이터 전송이 안되는데? update, delete  둘다 post로 해야 할 듯.
+class UpdateCart(APIView):
+    serializer_class = CartSerializer
+    lookup_url_kwarg = 'writer'
+
+    def delete(self, request, **kwargs):
+        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+            self.request.session.create()
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+        if serializer.is_valid():
+            writer = self.request.session.session_key
+            item = serializer.data.get('item')
+            print(writer)
+            cart = Cart(writer=writer, item=item)
+            cart.save()
+            return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
+        print(self.serializer_class(data=request.data))
+        return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
+        # if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+        #     self.request.session.create()
+        # serializer = self.serializer_class(data=request.data)
+        # print(serializer)
+        # if not serializer.is_valid():
+        #     print(serializer.errors)
+        # if serializer.is_valid():
+        #     print(serializer)
+        #     writer = self.request.session.session_key
+        #     item = serializer.data.get('item')
+        #     print(writer)
+        #     print(item)
+        #     item_code = self.request.session.get('item_code')
+        #     item = Item.objects.filter(code=item_code)[0]
+
+        #     writer = request.GET.get(self.lookup_url_kwarg)
+        #     cart = Cart.objects.filter(writer=writer, item=item)
+        #     print(item_code)
+        #     # serializer = self.serializer_class(data=request.data)
+        #     print(writer)
+        #     # print(serializer.is_valid())
+        #     print(item)
+        #     print(cart)
+        #     if cart.exists():
+        #         cart.delete()
+        #         return Response(status=status.HTTP_204_NO_CONTENT)
+        #     else:
+        #         return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+            self.request.session.create()
+        serializer = self.serializer_class(data=request.data)
+        if not serializer.is_valid():
+            print(serializer.errors)
+        if serializer.is_valid():
+            writer = self.request.session.session_key
+            item = serializer.data.get('item')
+            cart = Cart(writer=writer, item=item)
+            cart.save()
+            return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
+        print(self.serializer_class(data=request.data))
+        return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)

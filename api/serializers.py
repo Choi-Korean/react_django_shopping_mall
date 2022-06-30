@@ -1,6 +1,6 @@
 from dataclasses import field
 from rest_framework import serializers
-from .models import Item
+from .models import Cart, Item
 from rest_framework.parsers import MultiPartParser, FormParser
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -27,3 +27,9 @@ class updateItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = ('code', 'image', 'listing_or_not', 'like_count')
         parser_classes = (MultiPartParser, FormParser)
+
+
+class CartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cart
+        fields = ('writer', 'item')

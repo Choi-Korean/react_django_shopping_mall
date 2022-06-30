@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import Header from './Header';
 import Product from './Product';
 import './Info.css'
+import { useNavigate } from 'react-router-dom';
 
 // ENM ? 어쨌든 페이지 값 저장해놓는거
 const pages = {
@@ -28,6 +29,7 @@ export default function Info(props) {
     }
 
     const [items, setItems] = useState([]);
+    const navigate = useNavigate();
 
     // const [postData, setPostData] = useState(initialState);
 
@@ -58,13 +60,6 @@ export default function Info(props) {
             };
 
             setItems(new_items);
-
-            // initialState.id = data.id;
-            // initialState.image = data.image;
-            // initialState.listing_or_not = data.listing_or_not;
-            // initialState.code = data.code;
-            // initialState.like_count = data.like_count;
-            // initialState.created_at = data.created_at;
         }
         );
     }
@@ -74,29 +69,77 @@ export default function Info(props) {
         if (items.length == 0) {
             getItems();
         }
-        // let index = 1;   //추후 index별 listing 배열 다르게 적용 예정
 
-        {/* <img src={item.image} className='info_image' /> */ }
-        // const item_list = items.map((item) =>
-        //     <div className="info_row">
-        //         <Product
-        //             // id={index ++}
-        //             code={item.code}
-        //             created_at={item.created_at}
-        //             listing_or_not={item.listing_or_not}
-        //             image={item.image}
-        //             like_count={item.like_count} />
-        //     </div>
-        // );
         const item_list = items.map((item) =>
-            <Product
-                // id={index ++}
-                code={item.code}
-                created_at={item.created_at}
-                listing_or_not={item.listing_or_not}
-                image={item.image}
-                like_count={item.like_count} />
+            <Grid>
+                <Product
+                    // id={index ++}
+                    code={item.code}
+                    created_at={item.created_at}
+                    listing_or_not={item.listing_or_not}
+                    image={item.image}
+                    like_count={item.like_count} />
+                <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.code)}>Buy</Button>
+            </Grid>
         );
+        return <div className="product_container">{item_list}</div>;
+    }
+
+    const buyButtonPressed = (e) => {
+        console.log(e);
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                code: e
+            })
+        };
+        fetch('/api/buy-item/', requestOptions).then((response) => {
+            if (response.ok) {
+                navigate(`/item/${e}`);
+            } else {
+                this.setState({ error: "code not found." });
+            }
+        }).catch((error) => {
+            console.log(error);
+        })
+    }
+
+    return (
+        <Grid container spacing={4}>
+            {/* <Button color="secondary" variant="contained" onClick={() => renderItemList()}>
+                새로고침
+            </Button> */}
+            <Grid item xs={12} align="center">
+                <Typography component="h4" variant="h4">
+                    What do you want to buy?
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Typography variant="body1">
+                    {page === pages.JOIN ? joinInfo() : createInfo()}
+                </Typography>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <IconButton onClick={() => {
+                    page === pages.CREATE ? setPage(pages.JOIN) : setPage(pages.CREATE);
+                }}>
+                    {page === pages.CREATE ? <NavigateBeforeIcon /> : <NavigateNextIcon />}
+                </IconButton>
+            </Grid>
+            <Grid item xs={12} align="center">
+                <Button color="secondary" variant="contained" to="/" component={Link}>
+                    Back
+                </Button>
+            </Grid>
+
+            <Grid item xs={12} align="center">
+                {renderItemList()}
+            </Grid>
+        </Grid>
+    );
+}
+
 
         // const arr = ['a'];
         // let item_list2 = document.createElement('table');
@@ -147,43 +190,25 @@ export default function Info(props) {
         //     </Grid>
         // </Card>
 
-        return <div className="product_container">{item_list}</div>;
-    }
 
-    return (
-        // <div className="info">
-        <Grid container spacing={4}>
-            {/* <Button color="secondary" variant="contained" onClick={() => renderItemList()}>
-                새로고침
-            </Button> */}
-            <Grid item xs={12} align="center">
-                <Typography component="h4" variant="h4">
-                    What do you want to buy?
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Typography variant="body1">
-                    {page === pages.JOIN ? joinInfo() : createInfo()}
-                </Typography>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <IconButton onClick={() => {
-                    page === pages.CREATE ? setPage(pages.JOIN) : setPage(pages.CREATE);
-                }}>
-                    {page === pages.CREATE ? <NavigateBeforeIcon /> : <NavigateNextIcon />}
-                </IconButton>
-            </Grid>
-            <Grid item xs={12} align="center">
-                <Button color="secondary" variant="contained" to="/" component={Link}>
-                    Back
-                </Button>
-            </Grid>
-            
-            <Grid item xs={12} align="center">
-                {renderItemList()}
-            </Grid>
-        </Grid>
-        // </div>
-    );
-}
+                // let index = 1;   //추후 index별 listing 배열 다르게 적용 예정
 
+        {/* <img src={item.image} className='info_image' /> */ }
+        // const item_list = items.map((item) =>
+        //     <div className="info_row">
+        //         <Product
+        //             // id={index ++}
+        //             code={item.code}
+        //             created_at={item.created_at}
+        //             listing_or_not={item.listing_or_not}
+        //             image={item.image}
+        //             like_count={item.like_count} />
+        //     </div>
+        // );
+
+                    // initialState.id = data.id;
+            // initialState.image = data.image;
+            // initialState.listing_or_not = data.listing_or_not;
+            // initialState.code = data.code;
+            // initialState.like_count = data.like_count;
+            // initialState.created_at = data.created_at;

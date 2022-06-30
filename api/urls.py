@@ -10,4 +10,6 @@ urlpatterns = [
     path('leave-item/', LeaveItem.as_view()),
     path('update-item/', UpdateItem.as_view()),
     path('item-list/', ItemList.as_view()),
+    path('cart/', GetCart.as_view()),
+    path('update-cart/', UpdateCart.as_view()),
 ]

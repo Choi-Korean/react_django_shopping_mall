@@ -28,7 +28,7 @@ function Product({code, created_at, image, listing_or_not, like_count}) {
         <h5 className="product_title">{code}</h5>
         <p className="product_des">{like_count}</p>
         <div className="product_mon">{created_at}</div>
-        <div className="product_link_div"><Link className="product_link" to={`/item/${code}`} >구매하기</Link></div><br></br>
+        {/* <div className="product_link_div"><Link className="product_link" to={`/item/${code}`} >구매하기</Link></div><br></br> */}
         <div className="product_link_div"><Link className="product_link_2" to='/cart'>찜하기</Link></div>
     </div>
         // <div className="product">

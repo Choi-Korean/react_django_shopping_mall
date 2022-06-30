@@ -25,3 +25,8 @@ class Item(models.Model):
     like_count = models.IntegerField(null=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     current_song = models.CharField(max_length=50, null=True)
+
+
+class Cart(models.Model):
+    writer = models.CharField(max_length=50)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
