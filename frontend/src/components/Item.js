@@ -13,6 +13,7 @@ import Product from './Product';
 // (1) 두개의 홈페이지에서 같은 id 페이지 띄우고, 하나에서 session 제거해서 초기페이지로 이동시, 다른 페이지도 새로고침시 이동되어야 하는데 안됨.
 // (2) create-room 해서 item page 들어가고, 새로고침 한번 하고 leave-item 버튼 눌러도 나가지지가 않음. 다시 새로고침해야 나가짐. 이건 뭐지
 
+// 현재 item page에 item 주인이 접속해있지 않으면 spotify item 못불러옴. token 처리 로직에서 그렇게 처리된 거 같은데, 이게 맞긴 한ㄷ ㅔ흠
 
 export default function Item(props) {
   const initialState = {

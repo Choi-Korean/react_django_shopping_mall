@@ -42,8 +42,8 @@ export default function Info(props) {
     }
 
     useEffect(() => {
-        // renderItemList();
-    });
+        getItems();
+    }, []);
 
     const getItems = () => {
         fetch('/api/item-list').then((response) => {
@@ -66,10 +66,9 @@ export default function Info(props) {
     // getItems();
 
     const renderItemList = () => {
-        if (items.length == 0) {
-            getItems();
-        }
-
+        // if (items.length == 0) {
+        //     getItems();
+        // }
         const item_list = items.map((item) =>
             <Grid>
                 <Product

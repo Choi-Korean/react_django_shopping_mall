@@ -12,6 +12,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 
+# 현재 wrtier 부분이, 대부분 session_key 넣어서 session 꺼내서 관리하는 형식. 나중에 login 구현하면
+# login정보로 변경해야 함
+
 def convertDate(serializer):
     # 날짜 변환 코드
     format = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -190,74 +193,133 @@ class GetCart(APIView):
     serializer_class = CartSerializer
     lookup_url_kwarg = 'writer'
     def get(self, request, format=None):
-        writer = request.GET.get(self.lookup_url_kwarg)
+        writer = self.request.session.session_key
+        item = Item.objects.filter(code=request.GET.get('item'))
+        if item.exists():
+            cart = Cart.objects.filter(writer=writer, item=item[0])
+            if len(cart) > 0:
+                serializer = CartSerializer(cart, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Item Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+class GetCartList(APIView):
+    serializer_class = CartSerializer
+    lookup_url_kwarg = 'writer'
+    def get(self, request, format=None):
+        writer = self.request.session.session_key
         cart = Cart.objects.filter(writer=writer)
-        if len(cart) > 0:
-            serializer = CartSerializer(cart, many=True)
-            print(serializer)
+
+        # cart에 담긴 item id 불러와서 Item object 받아서 items에 넣어주기
+        items = []
+        for c in cart:
+            items += Item.objects.filter(id=c.item.id)
+
+        if len(items) > 0:
+
+            # 넣어준 items로 Itemserializer list 만들기
+            # 왜냐면, Cart page에서도 Product 페이지 이용해서 item 로드하려면 item 정보가 필요해서
+
+            serializer = ItemSerializer(items, many=True)
+            # serializer = CartSerializer(cart, many=True) 
+            # cart list 전달해주지 않을 거라서 위아래 코드 필요없어짐
+            # # front에서 전달 받은 item id를 item code로 변환해서 전달해주기. 였는데 필요없어졌음
+            # for i in range(len(serializer.data)):
+            #     item = Item.objects.filter(id=serializer.data[i]['item'])
+            #     serializer.data[i]['item'] = item[0].code
+
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
 # 아 delete method는 뭐 request로 데이터 전송이 안되는데? update, delete  둘다 post로 해야 할 듯.
-class UpdateCart(APIView):
+class CreateCart(APIView):
     serializer_class = CartSerializer
-    lookup_url_kwarg = 'writer'
-
-    def delete(self, request, **kwargs):
+    def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
-        serializer = self.serializer_class(data=request.data)
-        if not serializer.is_valid():
-            print(serializer.errors)
-        if serializer.is_valid():
-            writer = self.request.session.session_key
-            item = serializer.data.get('item')
-            print(writer)
-            cart = Cart(writer=writer, item=item)
-            cart.save()
+        writer = self.request.session.session_key
+        try:    # react 페이지에서 접근할 때
+            item = Item.objects.filter(code=request.data['item'])[0]
+        except: # API 서버에 직접 접근할때
+            serializer = self.serializer_class(data=request.data)
+            if not serializer.is_valid():
+                print(serializer.errors)
+            if serializer.is_valid(): 
+                item_id = serializer.data.get('item')
+                item = Item.objects.filter(id=item_id)[0]
+        cart = Cart(writer=writer, item=item)
+        try:
+            cart.save() 
             return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
-        print(self.serializer_class(data=request.data))
-        return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
-        # if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
-        #     self.request.session.create()
-        # serializer = self.serializer_class(data=request.data)
-        # print(serializer)
-        # if not serializer.is_valid():
-        #     print(serializer.errors)
-        # if serializer.is_valid():
-        #     print(serializer)
-        #     writer = self.request.session.session_key
-        #     item = serializer.data.get('item')
-        #     print(writer)
-        #     print(item)
-        #     item_code = self.request.session.get('item_code')
-        #     item = Item.objects.filter(code=item_code)[0]
+        except:
+            return Response({'Bad Request' : 'Already created'},  status=status.HTTP_400_BAD_REQUEST)
 
-        #     writer = request.GET.get(self.lookup_url_kwarg)
-        #     cart = Cart.objects.filter(writer=writer, item=item)
-        #     print(item_code)
-        #     # serializer = self.serializer_class(data=request.data)
-        #     print(writer)
-        #     # print(serializer.is_valid())
-        #     print(item)
-        #     print(cart)
-        #     if cart.exists():
-        #         cart.delete()
-        #         return Response(status=status.HTTP_204_NO_CONTENT)
-        #     else:
-        #         return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
+class DeleteCart(APIView):
+    serializer_class = CartSerializer
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
         serializer = self.serializer_class(data=request.data)
-        if not serializer.is_valid():
-            print(serializer.errors)
-        if serializer.is_valid():
-            writer = self.request.session.session_key
-            item = serializer.data.get('item')
-            cart = Cart(writer=writer, item=item)
-            cart.save()
-            return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
-        print(self.serializer_class(data=request.data))
-        return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
+        writer = self.request.session.session_key
+        try:    # react 페이지에서 접근할 때
+            item = Item.objects.filter(code=request.data['item'])[0]
+        except: # API 서버에 직접 접근할때
+            serializer = self.serializer_class(data=request.data)
+            if not serializer.is_valid():
+                print(serializer.errors)
+            if serializer.is_valid(): 
+                item_id = serializer.data.get('item')
+                item = Item.objects.filter(id=item_id)[0]
+        cart = Cart.objects.filter(writer=writer, item=item)
+        if len(cart) > 0:
+            print(cart[0])
+            cart[0].delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+    # def delete(self, request, **kwargs):
+    #     if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+    #         self.request.session.create()
+    #     serializer = self.serializer_class(data=request.data)
+    #     if not serializer.is_valid():
+    #         print(serializer.errors)
+    #     if serializer.is_valid():
+    #         writer = self.request.session.session_key
+    #         item = serializer.data.get('item')
+    #         print(writer)
+    #         cart = Cart(writer=writer, item=item)
+    #         cart.save()
+    #         return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
+    #     print(self.serializer_class(data=request.data))
+    #     return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
+    #     # if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+    #     #     self.request.session.create()
+    #     # serializer = self.serializer_class(data=request.data)
+    #     # print(serializer)
+    #     # if not serializer.is_valid():
+    #     #     print(serializer.errors)
+    #     # if serializer.is_valid():
+    #     #     print(serializer)
+    #     #     writer = self.request.session.session_key
+    #     #     item = serializer.data.get('item')
+    #     #     print(writer)
+    #     #     print(item)
+    #     #     item_code = self.request.session.get('item_code')
+    #     #     item = Item.objects.filter(code=item_code)[0]
+
+    #     #     writer = request.GET.get(self.lookup_url_kwarg)
+    #     #     cart = Cart.objects.filter(writer=writer, item=item)
+    #     #     print(item_code)
+    #     #     # serializer = self.serializer_class(data=request.data)
+    #     #     print(writer)
+    #     #     # print(serializer.is_valid())
+    #     #     print(item)
+    #     #     print(cart)
+    #     #     if cart.exists():
+    #     #         cart.delete()
+    #     #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     #     else:
+    #     #         return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)

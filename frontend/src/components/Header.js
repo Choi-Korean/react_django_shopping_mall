@@ -25,7 +25,9 @@ export default function Header() {
                 </div>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Back</span>
-                    <span className='header_optionLineTwo'>order list</span>
+                    <Link to='/info' style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <span className='header_optionLineTwo'>order list</span>
+                    </Link>
                 </div>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Welcome</span>

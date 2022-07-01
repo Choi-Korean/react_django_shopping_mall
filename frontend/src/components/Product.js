@@ -2,35 +2,79 @@ import React from 'react';
 import './Product.css'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from '@material-ui/core';
 
-function Product({code, created_at, image, listing_or_not, like_count}) {
-    const [ basket , dispatch] = useState();
+function Product({ code, created_at, image, listing_or_not, like_count }) {
 
-    const addToBasket = () => {
-        dispatch({
-            type:"ADD_TO_BASKET",
-            item: {
-                code: code,
-                created_at: created_at,
-                image: image,
-                listing_or_not: listing_or_not,
-                like_count: like_count,
-            },
-        });
+    const [cart, setCart] = useState(false);
 
-    };
+    const getCart = () => {
+        fetch("/api/cart?item=" + code)
+            .then((response) => {
+                if (response.ok) {
+                    console.log(response)
+                    setCart(true);
+                }
+            });
+    }
+    getCart();
+
+
+    const cartCreateButtonPressed = () => {
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                writer: "",
+                item: code
+            }),
+        };
+        fetch("/api/create-cart/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setCart(true);
+                    // } else {
+                    //     this.setState({
+                    //         msg: "Error Updating Item..."
+                    //     });
+                }
+            });
+    }
+
+    const cartDeleteButtonPressed = () => {
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                writer: "",
+                item: code
+            }),
+        };
+        fetch("/api/delete-cart/", requestOptions)
+            .then((response) => {
+                if (response.ok) {
+                    setCart(false);
+                }
+            });
+    }
 
 
     return (
 
-    <div className="product">
-        <div className="product_img_div"><img src={image} className="product_img"/></div>
-        <h5 className="product_title">{code}</h5>
-        <p className="product_des">{like_count}</p>
-        <div className="product_mon">{created_at}</div>
-        {/* <div className="product_link_div"><Link className="product_link" to={`/item/${code}`} >구매하기</Link></div><br></br> */}
-        <div className="product_link_div"><Link className="product_link_2" to='/cart'>찜하기</Link></div>
-    </div>
+        <div className="product">
+            <div className="product_img_div"><img src={image} className="product_img" /></div>
+            <h5 className="product_title">{code}</h5>
+            <p className="product_des">{like_count}</p>
+            <div className="product_mon">{created_at}</div>
+            {/* <div className="product_link_div"><Link className="product_link" to={`/item/${code}`} >구매하기</Link></div><br></br> */}
+            {cart ?
+                <div className="product_link_div"><Button color="primary" variant="contained" onClick={() => cartDeleteButtonPressed()}>찜해제</Button></div>
+                :
+                <div className="product_link_div"><Button color="secondary" variant="contained" onClick={() => cartCreateButtonPressed()}>찜하기</Button></div>
+            }
+            {/* <div className="product_link_div"><Link className="product_link_2" to='/cart'>찜하기</Link></div>
+            <div className="product_link_div"><Link className="product_link_2" to='/cart'>찜해제하기</Link></div> */}
+        </div>
         // <div className="product">
 
         //     <div className="product_info">

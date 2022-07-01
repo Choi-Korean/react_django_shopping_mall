@@ -30,3 +30,7 @@ class Item(models.Model):
 class Cart(models.Model):
     writer = models.CharField(max_length=50)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['writer', 'item'], name='user-polled'),
+        ]
