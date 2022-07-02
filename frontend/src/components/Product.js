@@ -1,12 +1,17 @@
 import React from 'react';
 import './Product.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@material-ui/core';
+import Header from './Header';
 
 function Product({ code, created_at, image, listing_or_not, like_count }) {
 
     const [cart, setCart] = useState(false);
+
+    useEffect(() => {
+        getCart();
+    });
 
     const getCart = () => {
         fetch("/api/cart?item=" + code)
@@ -17,7 +22,7 @@ function Product({ code, created_at, image, listing_or_not, like_count }) {
                 }
             });
     }
-    getCart();
+    
 
 
     const cartCreateButtonPressed = () => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import './Header.css'
 import SearchIcon from '@material-ui/icons/Search'
 import ShoppingBasket from '@material-ui/icons/ShoppingCart'
@@ -8,6 +8,26 @@ import { Link } from 'react-router-dom';
 // 추후 import styles from ~.css 로 적용하고, className을 'header' 에서 {styles.header} 로 변경할 필요 있어보임.
 // 근데 이름을 애초에 안겹치게 (classname_태그명) 으로 지으면 문제 없을 거 같기도 하고
 export default function Header() {
+
+    const [cartCount, setCartCount] = useState(0);
+
+    useEffect(() => {
+        getCartList();
+    }, []);
+
+    const getCartList = () => {
+        fetch("/api/cart-list")
+            .then((response) => {
+                if(!response.ok){
+                    setCartCount(0);
+                    return;
+                }
+                return response.json();
+            }).then(data => {
+                setCartCount(data.length);
+            });
+    }
+
     return (
         <div className='header'>
             <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -37,7 +57,7 @@ export default function Header() {
                     <Link to='/cart' style={{ color: 'inherit', textDecoration: 'none' }}>
                         <ShoppingBasket className='header_optionLineOne' />
                     </Link>
-                    <span className='header_optionLineTwo'>0</span>
+                    <span className='header_optionLineTwo'>{cartCount}</span>
                 </div>
             </div>
         </div>

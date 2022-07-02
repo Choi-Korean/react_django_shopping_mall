@@ -10,12 +10,17 @@ function Cart() {
 
     useEffect(() => {
         getCartList();
-    },[]);
+        renderItemList();
+    });
 
     const getCartList = () => {
         fetch("/api/cart-list")
             .then((response) => {
-                return response.json();
+                if(!response.ok){
+                    return;
+                }else{
+                    return response.json();
+                }
             }).then(data => {
                 const new_items = [];
                 for (var key of data) {
