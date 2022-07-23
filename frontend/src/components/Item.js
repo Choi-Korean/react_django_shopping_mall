@@ -60,7 +60,7 @@ export default function Item(props) {
   // 이 배열안에 들어간 값(컴포넌트)이 바뀔 때마다 useEffect 실행됨. 비우면 처음 렌더링 될때 한번만 실행. 배열을 생략하면 리렌더링 될때마다 실행
 
 
-  // 매 1초마다 API 요청 보내는 websocket 역할. 와 신기하다. 계속 보내네
+  // 매 1초마다 API 요청 보내는 websocket 역할.
   const componentDidMount = () => {
     const interval = setInterval(getCurrentSong, 10000);
   }
@@ -104,7 +104,7 @@ export default function Item(props) {
 // 나도 다른 page처럼 class형이었으면 그냥 withRouter.js 만들어놓은거로 처리했으면 됐는데,
 // 이 페이지는 함수형으로 만들어서 애 좀 먹었다..
 // 그래서 const 함수형으로 선언하고, useNavigate을 위에 const 변수에 담아서 url 이동시켜야 함.
-// 이렇게 함수형일 때는 const로 함수 선언해줘야 아래 html 태그에서 변수 인식하더라. 아오.. 힘들어...
+// 이렇게 함수형일 때는 const로 함수 선언해줘야 아래 html 태그에서 변수 인식함
   const leaveButtonPressed = () => {
     const requestOptions = {
       method: "POST",
@@ -113,7 +113,7 @@ export default function Item(props) {
     fetch("/api/leave-item/", requestOptions).then((response) => {
       props.leaveItemCallback();
       navigate("/");
-      location.reload() // navigate만 하면 왠지 모르겠는데 자꾸 item.js에 있는 useEffect도 실행이 된다? 그래서 reload 일단 한건데. 아니 그럼 rerender 의미가 없는데
+      location.reload() // navigate만 하면 item.js에 있는 useEffect도 실행이 됨
       // useEffect에서 Unmount? 나 return을 해줘야 하는듯 한데
     });
   };
@@ -137,7 +137,7 @@ export default function Item(props) {
           code={code}
           // updateCallBack={useEffect}
           // updateCallBack={} // 여기서 원래 useEffect같은거 전달하고, createItem page에서 값 업데이트 되면 이거 써서 reRender효과 줘야 함.
-          // 강의에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reload 처리
+          // 자료에서는 getItem() 함수로 작성된 부분이라 난 패스. 대신 location.reload 처리
           />
       </Grid>
       <Grid item xs={12} align="center">

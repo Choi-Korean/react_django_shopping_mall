@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-// import { render } from "react-dom";  // 이 개같은거 이제 React 18부터는 안씀
+// import { render } from "react-dom";  // 이거 이제 React 18부터는 안씀
 import HomePage from "./HomePage";
 import {createRoot} from 'react-dom/client';
 

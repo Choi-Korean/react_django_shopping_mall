@@ -38,7 +38,7 @@ def update_or_create_user_tokens(session_id, access_token, token_type, expires_i
 
 
 # 토큰 확인해서 만료함수, 재부여 함수
-# is_spotify_auth -> refresh -> get_user_tokens -> refresh -> update_or_create -> 토큰 업데이트 완료 -> is_spotify_auth(true). << false면 진작 짤렸고
+# is_spotify_auth -> refresh -> get_user_tokens -> refresh -> update_or_create -> 토큰 업데이트 완료 -> is_spotify_auth(true). << false면 초기에 짤림
 
 def is_spotify_authenticated(session_id):
     tokens = get_user_tokens(session_id)
@@ -65,7 +65,7 @@ def refresh_spotify_token(session_id):
     update_or_create_user_tokens(session_id, access_token, token_type, expires_in, refresh_token)
 
 # endpoint : request 보낼 곳
-def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False): #  오 내가 생각했더 ㄴ거네. 이렇게 put, post 뭐로 할지 보내게 한다음에 한번에 분기처리
+def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False): #  put, post 뭐로 할지 보내게 한다음에 한번에 분기처리
     tokens = get_user_tokens(session_id)
     headers = {'Content-Type': 'application/json', 'Authorization': "Bearer " + tokens.access_token} # Spotify 규정. 거기 doc 보기 이 구조 어떻게 쓰일지 보려면
 

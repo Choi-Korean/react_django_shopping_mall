@@ -116,7 +116,7 @@ class CreateItemPage extends Component {
         };
 
 
-        // 오.. 여기서 django create-room api 페이지로 보내는 거네
+        // 여기서 django create-room api 페이지로 request
         fetch("/api/create-item/", requestOptions)
             .then((response) => response.json())
             .then((data) => this.props.navigate("/item/" + data.code));
@@ -154,7 +154,7 @@ class CreateItemPage extends Component {
                 }
                 // this.props.updateCallBack();
                 // location.reload();  // 여기서 위처럼 props로 item page에서 render 효과 받아야 하는데, 함수로 안써서 그냥 새로고침 형식으로 전환
-                // 근데 updating 하면 message 띄워주는데 그게 새로고침하면 안보임. 그래서 메시지 클릭하면 새로고침되게 바꿔놨음 일단. 그게 이뻐서
+                // 근데 updating 하면 message 띄워주는데 그게 새로고침하면 안보임. 그래서 메시지 클릭하면 새로고침되게 바꿔놨음 일단.
             });
     }
 
