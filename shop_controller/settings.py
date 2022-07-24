@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'frontend.apps.FrontendConfig',
     'spotify.apps.SpotifyConfig',
+    'users',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -145,3 +147,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 
 # # URL used to access the media
 MEDIA_URL = '/images/'
+
+AUTH_USER_MODEL = "users.User"

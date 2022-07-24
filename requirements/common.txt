@@ -1,0 +1,5 @@
+Django 
+pillow 
+django_bootstrap5 
+mysqlclient 
+django-dotenv django-debug-toolbar 

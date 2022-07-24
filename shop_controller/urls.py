@@ -23,6 +23,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('', include('frontend.urls')),
     path('spotify/', include('spotify.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('users/', include('users.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
