@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'spotify.apps.SpotifyConfig',
     'users',
     'accounts',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +150,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/images/'
 
 AUTH_USER_MODEL = "users.User"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+}

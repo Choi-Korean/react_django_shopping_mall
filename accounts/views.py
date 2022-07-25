@@ -18,19 +18,21 @@ from accounts.serializers import LoginSerializers, Tokenserializers
 # Create your views here.
 
 class LoginView(APIView):   # 위 함수형이 안되어서 우선 class 기반으로 다시 작성해봄. 이건 정상 작동
-    permission_classes = AllowAny
+    permission_classes = [AllowAny]
     def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user:
-            token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        else:
-            return Response(status=401)
+        user = authenticate(request, username=request.data['username'], password=request.data['password'])
+        token, _ = Token.objects.get_or_create(user=user)
+        print(token)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        # if user:
+        #     token, _ = Token.objects.get_or_create(user=user)
+            # return Response({'token': token.key})
+        # else:
+        #     return Response(status=401)
 
 class LogoutView(APIView):
     def post(self, request):
+        print(request)
         if request.user.is_authenticated:
             logout(request)
             return Response(status=status.HTTP_200_OK)
