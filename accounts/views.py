@@ -20,10 +20,14 @@ from accounts.serializers import LoginSerializers, Tokenserializers
 class LoginView(APIView):   # 위 함수형이 안되어서 우선 class 기반으로 다시 작성해봄. 이건 정상 작동
     permission_classes = [AllowAny]
     def post(self, request):
-        user = authenticate(request, username=request.data['username'], password=request.data['password'])
+        print(request.user)
+        print(request.auth)
+        print(request.META)
+        user = authenticate(username=request.data['username'], password=request.data['password'])
+        print(user)
         token, _ = Token.objects.get_or_create(user=user)
         print(token)
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response({'username': request.data['username'], 'token': token.key}, status=status.HTTP_200_OK)
         # if user:
         #     token, _ = Token.objects.get_or_create(user=user)
             # return Response({'token': token.key})
@@ -31,10 +35,14 @@ class LoginView(APIView):   # 위 함수형이 안되어서 우선 class 기반�
         #     return Response(status=401)
 
 class LogoutView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
-        print(request)
-        if request.user.is_authenticated:
-            logout(request)
+        try:
+            user = User.objects.filter(id=Token.objects.filter(key=request.data['token'])[0].user_id)[0]
+        except:
+            return Response(status=401)
+        if user.is_authenticated:
+            user.auth_token.delete()
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=401)

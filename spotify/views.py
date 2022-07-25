@@ -12,12 +12,14 @@ from rest_framework import status
 from rest_framework.response import Response
 from .util import *
 from api.models import Item
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 
 # front -> AuthURL -> return url to front ? 맞나? -> authorizing -> spotify_callback -> back to original app with token
 
 class AuthURL(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, format=None):
         # 접속/사용 원하는 서비스. spotify docs에 정해진 내용인듯
         scopes = 'user-read-playback-state user-modify-playback-state user-read-currently-playing'
@@ -58,11 +60,13 @@ def spotify_callback(request, format=None):
 
 
 class IsAuthenticated(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, format=None):
         is_authenticated = is_spotify_authenticated(self.request.session.session_key)
         return Response({'status': is_authenticated}, status=status.HTTP_200_OK)
 
 class CurrentSong(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, format=None):
         item_code = self.request.session.get('item_code')
         item = Item.objects.filter(code=item_code)
@@ -119,6 +123,7 @@ class CurrentSong(APIView):
             votes = Vote.objects.filter(item=item).delete() # 현재까지 있었던 좋아요(=votes) 초기화
 
 class PauseSong(APIView):
+    permission_classes = [AllowAny]
     def put(self, response, format=None):
         item_code = self.request.session.get('item_code')
         item = Item.objects.filter(code=item_code)[0]
@@ -128,6 +133,7 @@ class PauseSong(APIView):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
 class PlaySong(APIView):
+    permission_classes = [AllowAny]
     def put(self, response, format=None):
         item_code = self.request.session.get('item_code')
         item = Item.objects.filter(code=item_code)[0]
@@ -137,6 +143,7 @@ class PlaySong(APIView):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
 class SkipSong(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         item_code = self.request.session.get('item_code')
         item = Item.objects.filter(code=item_code)[0]

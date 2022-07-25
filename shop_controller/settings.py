@@ -52,11 +52,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
-    'rest_framework',
     'frontend.apps.FrontendConfig',
     'spotify.apps.SpotifyConfig',
-    'users',
     'accounts',
+    'users',
+    'rest_framework',
     'rest_framework.authtoken',
 ]
 
@@ -150,13 +150,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/images/'
 
 AUTH_USER_MODEL = "users.User"
+# AUTH_USER_MODEL = "users.UserManager"
 
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAdminUser',
+        # 'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'auth.authenticate.SafeJWTAuthentication',
     ),
 }

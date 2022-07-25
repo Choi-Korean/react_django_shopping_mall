@@ -11,6 +11,7 @@ from .serializers import CartSerializer, ItemSerializer, CreateItemSerializer, u
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
+from rest_framework.permissions import AllowAny
 
 # 현재 wrtier 부분이, 대부분 session_key 넣어서 session 꺼내서 관리하는 형식. 나중에 login 구현하면
 # login정보로 변경해야 함
@@ -27,10 +28,12 @@ def convertDate(serializer):
         return datetime.datetime.strftime(datetime.datetime.strptime(serializer['created_at'], format), format_to)
 
 class ItemView(generics.CreateAPIView):
+    permission_classes = [AllowAny]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
 class GetItem(APIView):
+    permission_classes = [AllowAny]
     serializer_class = ItemSerializer
     lookup_url_kwarg = 'code'
 
@@ -49,6 +52,7 @@ class GetItem(APIView):
         return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class BuyItem(APIView):
+    permission_classes = [AllowAny]
     lookup_url_kwarg = 'code'
 
     def post(self, request, foramt=None):
@@ -68,6 +72,7 @@ class BuyItem(APIView):
         return Response({'Bad Request':'Invalid post data, did not find a code'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CreateItemView(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CreateItemSerializer
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
@@ -108,6 +113,7 @@ class CreateItemView(APIView):
         return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserInItem(APIView):
+    permission_classes = [AllowAny]
     def get(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
@@ -118,6 +124,7 @@ class UserInItem(APIView):
         return JsonResponse(data, status=status.HTTP_200_OK)
     
 class LeaveItem(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         if 'item_code' in self.request.session:
             self.request.session.pop('item_code')
@@ -129,7 +136,7 @@ class LeaveItem(APIView):
         return Response({'Message': 'Success'}, status=status.HTTP_200_OK)
 
 class UpdateItem(APIView):
-
+    permission_classes = [AllowAny]
     serializer_class = updateItemSerializer
 
     def patch(self, request, format=None):
@@ -165,6 +172,7 @@ class UpdateItem(APIView):
         return Response({'Bad Request': 'Invalid Data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ItemList(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
 
@@ -190,6 +198,7 @@ class ItemList(generics.ListCreateAPIView):
     # return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetCart(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CartSerializer
     lookup_url_kwarg = 'writer'
     def get(self, request, format=None):
@@ -204,6 +213,7 @@ class GetCart(APIView):
         return Response({'Item Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
 class GetCartList(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CartSerializer
     lookup_url_kwarg = 'writer'
     def get(self, request, format=None):
@@ -233,6 +243,7 @@ class GetCartList(APIView):
 
 # 아 delete method는 뭐 request로 데이터 전송이 안되는데? update, delete  둘다 post로 해야 할 듯.
 class CreateCart(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CartSerializer
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
@@ -256,6 +267,7 @@ class CreateCart(APIView):
 
 
 class DeleteCart(APIView):
+    permission_classes = [AllowAny]
     serializer_class = CartSerializer
     def post(self, request, format=None):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기

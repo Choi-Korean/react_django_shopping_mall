@@ -41,7 +41,15 @@ export default function Header() {
             <div className='header_nav'>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Hi</span>
-                    <span className='header_optionLineTwo'>login?</span>
+                    <Link to='/login' style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <span className='header_optionLineTwo'>login?</span>
+                    </Link>
+                    <Link to='/logout' style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <span className='header_optionLineTwo'>logout?</span>
+                    </Link>
+                    <Link to='/signup' style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <span className='header_optionLineTwo'>Sign up</span>
+                    </Link>
                 </div>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Back</span>

@@ -9,14 +9,27 @@ import Info from './Info';
 import Header from './Header';
 import CartItem from './CartItem';
 import Cart from './Cart';
+import Signup from './Signup';
+import Login from './Login';
+import Logout from './Logout';
 
 export default class HomePage extends Component{
     constructor(props){
         super(props);
         this.state = {
             code: null,
+            username: null,
+            authenticated: null,
         };
         this.clearCode = this.clearCode.bind(this);
+    }
+
+    userHasAuthenticated(authenticated, username, token){ 
+        // this.setState({
+        //     authenticated: authenticated,
+        //     username: username,
+        // });
+        localStorage.setItem('token', token);
     }
 
     // ** 중요 : 사용자 상태에 따라 component 다르게 적용하는 것?
@@ -82,6 +95,9 @@ export default class HomePage extends Component{
                 <Route path='/create' element={<CreateItemPage />} />
                 <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}/>
                 <Route path='/cart' element={<Cart />}/>
+                <Route path='/signup' element={<Signup />}/>
+                <Route path='/login' element={<Login userHasAuthenticated={this.userHasAuthenticated} />}/>
+                <Route path='/logout' element={<Logout />}/>
             </Routes>
         </Router>);
     }
