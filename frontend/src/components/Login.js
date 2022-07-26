@@ -11,6 +11,18 @@ function Login(props) {
     const [password, setPassword] = useState();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        checkLogined();
+        }
+    )
+
+    const checkLogined = () => {
+        if(localStorage.getItem('token')){
+            navigate("/");
+            location.reload();
+        }
+    }
+
     const handleCreateButtonPressed = () => {
         var requestOptions = {
             method: "POST",
@@ -26,7 +38,7 @@ function Login(props) {
             .then((data) => {
                 console.log(data);
                 props.userHasAuthenticated(true, data.username, data.token);
-                navigate('/info');
+                checkLogined();
             }
         );
     }

@@ -10,10 +10,11 @@ import { Link } from 'react-router-dom';
 export default function Header() {
 
     const [cartCount, setCartCount] = useState(0);
+    const [token, setToken] = useState(localStorage.getItem('token'));
 
     useEffect(() => {
         getCartList();
-    }, []);
+    }, [token]);
 
     const getCartList = () => {
         fetch("/api/cart-list")
@@ -28,6 +29,33 @@ export default function Header() {
             });
     }
 
+    const handleCreateButtonPressed = () => {
+        var requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                token: localStorage.getItem('token'),
+            }),
+        };
+
+        fetch("/accounts/logout/", requestOptions)
+            .then((response) => response)
+            .then((data) => {
+                console.log(data);
+                window.localStorage.removeItem('token');
+                setToken("");
+            }
+        );
+    }
+
+    const handleUserName = (e) => {
+        setUsername(e.target.value)
+    };
+
+    const handlePassword = (e) => {
+        setPassword(e.target.value)
+    };
+
     return (
         <div className='header'>
             <Link to='/' style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -41,15 +69,16 @@ export default function Header() {
             <div className='header_nav'>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Hi</span>
-                    <Link to='/login' style={{ color: 'inherit', textDecoration: 'none' }}>
-                        <span className='header_optionLineTwo'>login?</span>
-                    </Link>
-                    <Link to='/logout' style={{ color: 'inherit', textDecoration: 'none' }}>
-                        <span className='header_optionLineTwo'>logout?</span>
-                    </Link>
-                    <Link to='/signup' style={{ color: 'inherit', textDecoration: 'none' }}>
-                        <span className='header_optionLineTwo'>Sign up</span>
-                    </Link>
+                    {token
+                    ?
+                        <button className='header_optionLineTwo' onClick={() => handleCreateButtonPressed()}>logout?</button>
+                    :
+                        <><Link to='/login' style={{ color: 'inherit', textDecoration: 'none' }}>
+                            <span className='header_optionLineTwo'>login?</span>
+                        </Link><Link to='/signup' style={{ color: 'inherit', textDecoration: 'none' }}>
+                                <span className='header_optionLineTwo'>Sign up</span>
+                            </Link></>
+                    }
                 </div>
                 <div className='header_option'>
                     <span className='header_optionLineOne'>Back</span>

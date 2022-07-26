@@ -97,7 +97,6 @@ export default class HomePage extends Component{
                 <Route path='/cart' element={<Cart />}/>
                 <Route path='/signup' element={<Signup />}/>
                 <Route path='/login' element={<Login userHasAuthenticated={this.userHasAuthenticated} />}/>
-                <Route path='/logout' element={<Logout />}/>
             </Routes>
         </Router>);
     }
