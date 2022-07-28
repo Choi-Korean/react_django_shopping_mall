@@ -54,8 +54,10 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'frontend.apps.FrontendConfig',
     'spotify.apps.SpotifyConfig',
-    'accounts',
-    'users',
+    'accounts.apps.AccountsConfig',
+    'users.apps.UsersConfig',
+    'qna.apps.QnaConfig',
+    'markets.apps.MarketsConfig',
     'rest_framework',
     'rest_framework.authtoken',
 ]
@@ -94,10 +96,24 @@ WSGI_APPLICATION = 'shop_controller.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'sample1_dev',
+        'USER': 'root',
+        'PASSWORD': get_secret('db_pw'),
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # 추가, 만약에 이 부분 때문에 오류가 난다면, 이 라인을 지우고 다시 시도해주세요.
+        },
     }
 }
 
@@ -124,13 +140,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
+
+# LANGUAGE_CODE = 'en-us'
+
+# TIME_ZONE = 'UTC'
+
+# USE_I18N = True
+
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
