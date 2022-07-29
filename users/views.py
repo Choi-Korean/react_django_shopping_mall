@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from users.serializers import UserCreateSerializer
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
 
 # Create your views here.
 
@@ -21,4 +22,5 @@ class Signup(APIView):
             )
             user.set_password(serializer.data['password'])
             user.save()
+            auth_login(request, user)
             return Response(serializer.data, status=201)

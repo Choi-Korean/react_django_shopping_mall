@@ -52,6 +52,29 @@ class Item(models.Model):
     review_point = models.PositiveIntegerField('리뷰평점', default=0)
     questions = GenericRelation(Question, related_query_name="question")
 
+    def colors(self):
+        colors = []
+        item_reals = self.item_real.all()
+        for item_real in item_reals:
+            colors.append(item_real.option_2_name)
+
+        html = ''
+
+        for color in set(colors):
+            if color == '레드':
+                rgb_color = 'red'
+            elif color == '그린':
+                rgb_color = 'green'
+            elif color == '블루':
+                rgb_color = 'blue'
+            elif color == '핑크':
+                rgb_color = 'pink'
+            elif color == '와인':
+                rgb_color = '#722F37'
+            html += f"""<span style="width:10px; height:10px; display:inline-block; border-radius:50%; margin:0 3px; background-color:{rgb_color};"></span>"""
+
+        return html
+
 class Cart(models.Model):
     writer = models.CharField(max_length=50)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -68,29 +91,6 @@ class Cart(models.Model):
 #         img_name += '2' if self.id % 2 == 0 else ''
 
 #         return f"https://raw.githubusercontent.com/jhs512/mbly-img/master/{img_name}.jpg"
-
-#     def colors(self):
-#         colors = []
-#         product_reals = self.product_reals.all()
-#         for product_real in product_reals:
-#             colors.append(product_real.option_2_name)
-
-#         html = ''
-
-#         for color in set(colors):
-#             if color == '레드':
-#                 rgb_color = 'red'
-#             elif color == '그린':
-#                 rgb_color = 'green'
-#             elif color == '블루':
-#                 rgb_color = 'blue'
-#             elif color == '핑크':
-#                 rgb_color = 'pink'
-#             elif color == '와인':
-#                 rgb_color = '#722F37'
-#             html += f"""<span style="width:10px; height:10px; display:inline-block; border-radius:50%; margin:0 3px; background-color:{rgb_color};"></span>"""
-
-#         return html
 
 
 class ItemReal(models.Model):
