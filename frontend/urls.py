@@ -8,7 +8,7 @@ urlpatterns = [ # 어떤 url이든 index로 보내서 index에서 처리하게
     path('info', index),
     path('buy', index),
     path('create', index),
-    path('item/<str:code>', index),
+    path('item/<str:id>', index),
     path('cart', index),
     path('signup', index),
     path('login', index),

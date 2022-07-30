@@ -6,7 +6,9 @@ import queue
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
-from .models import Cart, Item
+
+from markets.models import Market
+from .models import Cart, Item, ProductCategory
 from .serializers import CartSerializer, ItemSerializer, CreateItemSerializer, updateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,11 +20,12 @@ from rest_framework.permissions import AllowAny
 
 def convertDate(serializer):
     # 날짜 변환 코드
-    format = '%Y-%m-%dT%H:%M:%S.%fZ'
+    format = '%Y-%m-%dT%H:%M:%S.%f'
     format_to = "%Y-%m-%d %H시%M분"
     try:
         for i in serializer.data:
             i['created_at'] = datetime.datetime.strftime(datetime.datetime.strptime(i['created_at'], format), format_to)
+            i['update_date'] = datetime.datetime.strftime(datetime.datetime.strptime(i['update_date'], format), format_to)
         return serializer
     except:
         return datetime.datetime.strftime(datetime.datetime.strptime(serializer['created_at'], format), format_to)
@@ -35,17 +38,16 @@ class ItemView(generics.CreateAPIView):
 class GetItem(APIView):
     permission_classes = [AllowAny]
     serializer_class = ItemSerializer
-    lookup_url_kwarg = 'code'
 
     def get(self, request, format=None):
-        code = request.GET.get(self.lookup_url_kwarg)
-        if code != None:
-            item = Item.objects.filter(code=code)   # 내가 id인 부분이 강의에서는 전부 랜덤생성한 code(session 느낌)임
+        id = request.GET.get(self.id)
+        if id != None:
+            item = Item.objects.filter(id=id)   # 내가 id인 부분이 강의에서는 전부 랜덤생성한 code(session 느낌)임
             if len(item) > 0:
                 data = ItemSerializer(item[0]).data
                 # 이건 강의에서 현재 session이 host의 session과 일치하는지 확인하고, 일치하면 현재 session을 담는거고, 아니면 걍 냅두는?
                 # 처음 보는 코드라 남겨봄
-                data['is_writer'] = self.request.session.session_key == item[0].writer
+                # data['is_writer'] = self.request.session.session_key == item[0].writer
                 data['created_at'] = convertDate(data)
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
@@ -85,29 +87,31 @@ class CreateItemView(APIView):
         if not serializer.is_valid():
             print(serializer.errors)
         if serializer.is_valid():
-            writer = self.request.session.session_key
+            # writer = self.request.session.session_key
             # image = serializer.data.get('image')
             # image = request.FILES.get('image') #serializer.data.get('image')
-            print(request.data)
             image = request.data.get('image')
-            print("이미지")
-            print(image)
-            listing_or_not = serializer.data.get('listing_or_not')
-            like_count = serializer.data.get('like_count')
-            queryset = Item.objects.filter(writer=writer)
-            if queryset.exists():
-                item = queryset[0]
-                item.image = image
-                item.listing_or_not = listing_or_not
-                item.like_count = like_count
-                item.save(update_fields=['image', 'listing_or_not', 'like_count'])
-                self.request.session['item_code'] = item.code
-                return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
-            else:
-                item = Item(writer=writer, image=image, listing_or_not=listing_or_not, like_count=like_count)
-                item.save()
-                self.request.session['item_code'] = item.code
-                return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
+            # queryset = Item.objects.filter(writer=writer)
+            # if queryset.exists():
+            #     item = queryset[0]
+            #     item.image = image
+            #     item.listing_or_not = listing_or_not
+            #     item.like_count = like_count
+            #     item.save(update_fields=['image', 'listing_or_not', 'like_count'])
+            #     self.request.session['item_code'] = item.code
+            #     return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
+            # else:
+            
+            item = Item(name=serializer.data.get('name'),
+                        image=image,
+                        display_name=serializer.data.get('display_name'),
+                        price=serializer.data.get('price'),
+                        sale_price=serializer.data.get('sale_price'),
+                        category=ProductCategory.objects.filter(id=serializer.data.get('category'))[0],
+                        market=Market.objects.filter(id=serializer.data.get('market'))[0])
+            item.save()
+            # self.request.session['item_code'] = item.code
+            return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
         print("아아아아아ㅏ")
         print(self.serializer_class(data=request.data))
         return Response({'Bad Request' : 'Invalid Data..'}, status=status.HTTP_400_BAD_REQUEST)
@@ -148,26 +152,27 @@ class UpdateItem(APIView):
             print(serializer.errors)
         if serializer.is_valid():
             image = request.data.get('image')
-            listing_or_not = serializer.data.get('listing_or_not')
-            like_count = serializer.data.get('like_count')
-            code = serializer.data.get('code')
-            queryset = Item.objects.filter(code=code)
+            id = serializer.data.get('id')
+            queryset = Item.objects.filter(id=id)
 
             if not queryset.exists():
                 print("업데이트에선 여기 에러")
                 return Response({'msg': 'Item not found.'}, status=status.HTTP_404_NOT_FOUND)
 
             item = queryset[0]
-
             # 여기서 사용자 id와 세션 id 다르면 에러처리 해줘야 하는데, 내가 session 부여 쪽을 의도대로 안해놔서.. 이건 빼야 할듯 우선
-            user_id = self.request.session.session_key
-            if item.writer != user_id:
-                return Response({'msg': 'You are not the writer of this item.'}, status=status.HTTP_403_FORBIDDEN)
-            
+            # user_id = self.request.session.session_key
+            # if item.writer != user_id:
+            #     return Response({'msg': 'You are not the writer of this item.'}, status=status.HTTP_403_FORBIDDEN)
+
             item.image = image
-            item.listing_or_not = listing_or_not
-            item.like_count = like_count
-            item.save(update_fields=['image', 'listing_or_not', 'like_count'])
+            item.name = serializer.data.get('name')
+            item.display_name = serializer.data.get('display_name')
+            item.price = serializer.data.get('price')
+            item.sale_price = serializer.data.get('sale_price')
+            item.category = ProductCategory.objects.filter(id=serializer.data.get('category'))[0]
+            item.market = Market.objects.filter(id=serializer.data.get('market'))[0]
+            item.save(update_fields=['name', 'display_name', 'price', 'sale_price', 'image', 'category', 'market'])
             return Response(ItemSerializer(item).data, status=status.HTTP_200_OK)
         return Response({'Bad Request': 'Invalid Data...'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -175,11 +180,12 @@ class ItemList(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
     queryset = Item.objects.all()
     serializer_class = ItemSerializer
-
+    
 
     def get(self, request, format=None):
         # Note the use of `get_queryset()` instead of `self.queryset`
         queryset = self.get_queryset()
+        print(queryset[0].colors)
         serializer = ItemSerializer(queryset, many=True)
 
         # 날짜 변환 코드

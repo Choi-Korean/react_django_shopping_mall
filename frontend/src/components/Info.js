@@ -70,15 +70,16 @@ export default function Info(props) {
         //     getItems();
         // }
         const item_list = items.map((item) =>
+            // <ul className="t-grid t-grid-cols-1 sm:t-grid-cols-2 md:t-grid-cols-3 lg:sm:t-grid-cols-4 t-gap-[20px] t-mt-3">
             <Grid>
                 <Product
                     // id={index ++}
-                    code={item.code}
-                    created_at={item.created_at}
-                    listing_or_not={item.listing_or_not}
+                    id={item.id}
+                    display_name={item.display_name}
+                    sale_price={item.sale_price}
                     image={item.image}
-                    like_count={item.like_count} />
-                <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.code)}>Buy</Button>
+                    colors={item.colors} />
+                <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.id)}>Buy</Button>
             </Grid>
         );
         return <div className="product_container">{item_list}</div>;

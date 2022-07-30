@@ -76,7 +76,7 @@ class Item(models.Model):
         return html
 
 class Cart(models.Model):
-    writer = models.CharField(max_length=50)
+    writer = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     class Meta:
         constraints = [

@@ -100,7 +100,7 @@ function Signup({ }) {
                     </div>
                     <div className="mb-3">
                         <label className="form-label" for="id_email">이메일 주소</label>
-                        <input type="email" name="email" maxlength="254" cclassNamelass="form-control" placeholder="이메일 주소" required="" id="id_email" onChange={(e) => handleEmail(e)}></input>
+                        <input type="email" name="email" maxlength="254" className="form-control" placeholder="이메일 주소" required="" id="id_email" onChange={(e) => handleEmail(e)}></input>
                     </div>
                     <div className="mb-3">
                         <label className="form-label" for="id_name">이름</label>
@@ -117,7 +117,7 @@ function Signup({ }) {
                     <div className="mb-3">
                         <label className="form-label" for="id_profile_img">프로필이미지</label>
                         <input type="file" name="profile_img" accept="image/png, image/gif, image/jpeg" className="form-control" id="id_profile_img" onChange={(e) => handleImage(e)}/>
-                        <div class="form-text">gif/png/jpg 이미지를 업로드해주세요.</div>
+                        <div className="form-text">gif/png/jpg 이미지를 업로드해주세요.</div>
                     </div>
 
                     <button type="submit" className="btn-outline-primary" onClick={() => handleCreateButtonPressed()}><i className='fas fa-user-plus'></i>회원가입</button>

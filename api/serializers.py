@@ -16,7 +16,7 @@ class CreateItemSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False)
     class Meta:
         model = Item
-        fields = ('__all__')
+        fields = ('name', 'display_name', 'price', 'sale_price', 'image', 'category', 'market')
         # fields = ('id', 'code', 'writer', 'image',
         #         'listing_or_not', 'like_count', 'created_at')
         parser_classes = (MultiPartParser, FormParser)
@@ -27,7 +27,7 @@ class updateItemSerializer(serializers.ModelSerializer):
     code = serializers.CharField(validators=[])
     class Meta:
         model = Item
-        fields = ('code', 'image', 'listing_or_not', 'like_count')
+        fields = ('name', 'display_name', 'price', 'sale_price', 'image', 'category', 'market')
         parser_classes = (MultiPartParser, FormParser)
 
 

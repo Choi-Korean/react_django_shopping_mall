@@ -41,15 +41,15 @@ export default class HomePage extends Component{
     // asynchronous operation 비동기 처리를 위한 것
     // async를 붙여야 동기처리 기다리지 않고 렌더링/작업 진행함 << 실시간처리 가능
     // id가 위 설정한 null에서 변경된 사항 있다면 즉시 비동기처리로 아래에 넘겨줌
-    async componentDidMount(){
-        fetch('/api/user-in-item')
-        .then((response) => response.json())
-        .then((data) => {
-            this.setState({
-                code: data.code
-            });
-        });
-    }
+    // async componentDidMount(){
+    //     fetch('/api/user-in-item')
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //         this.setState({
+    //             id: data.id
+    //         });
+    //     });
+    // }
     
     renderHomePage(){
         return (
@@ -79,7 +79,7 @@ export default class HomePage extends Component{
 
     clearCode(){
         this.setState({
-            code: null,
+            id: null,
         });
     }
     
@@ -88,9 +88,9 @@ export default class HomePage extends Component{
             <Header />
             <Routes> 
                 {/* id 변경사항이 있다면 (? : if), item/id 주소로 이동시키고, 아니면 그냥 홈페이지 rendering */}
-                <Route path='/*' element={
+                {/* <Route path='/*' element={
                     this.state.code ? (<Navigate replace to={`/item/${this.state.code}`} />) : ( this.renderHomePage() )
-                }></Route>
+                }></Route> */}
                 {/* 아래 안 되어서 위 코드로 바꿈. 아래도 원래 강의 코드 안되어서 바꿨던 거. */}
                 {/* <Route path='/*' render={() => {
                     return this.state.id ? (this.props.navigate(`/item/${this.state.id}`)) : ( this.renderHomePage() )
@@ -98,7 +98,7 @@ export default class HomePage extends Component{
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path="/info" element={<Info /> } />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:code' element={<Item leaveItemCallback={this.clearCode}/>}/>
+                <Route path='/item/:id' element={<Item leaveItemCallback={this.clearCode}/>}/>
                 <Route path='/cart' element={<Cart />}/>
                 <Route path='/signup' element={<Signup />}/>
                 <Route path='/login' element={<Login userHasAuthenticated={this.userHasAuthenticated} />}/>
