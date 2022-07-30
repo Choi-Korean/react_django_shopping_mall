@@ -14,6 +14,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from accounts.serializers import LoginSerializers, Tokenserializers
+from django.contrib.auth import login as auth_login
 
 # Create your views here.
 
@@ -21,28 +22,29 @@ class LoginView(APIView):   # 위 함수형이 안되어서 우선 class 기반�
     permission_classes = [AllowAny]
     def post(self, request):
         print(request.user)
-        print(request.auth)
         print(request.META)
-        user = authenticate(username=request.data['username'], password=request.data['password'])
-        print(user)
-        token, _ = Token.objects.get_or_create(user=user)
-        print(token)
-        return Response({'username': request.data['username'], 'token': token.key}, status=status.HTTP_200_OK)
+        try:
+            user = authenticate(username=request.data['username'], password=request.data['password'])
+            auth_login(request, user)   # 이걸 해야 request에 user로 저장시켜줌
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({'username': request.data['username'], 'token': token.key}, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         # if user:
         #     token, _ = Token.objects.get_or_create(user=user)
-            # return Response({'token': token.key})
+        #     return Response({'token': token.key})
         # else:
         #     return Response(status=401)
 
 class LogoutView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
-        try:
-            user = User.objects.filter(id=Token.objects.filter(key=request.data['token'])[0].user_id)[0]
-        except:
-            return Response(status=401)
-        if user.is_authenticated:
-            user.auth_token.delete()
+        # try:
+        #     user = User.objects.filter(id=Token.objects.filter(key=request.data['token'])[0].user_id)[0]
+        # except:
+        #     return Response(status=401)
+        if request.user.is_authenticated:
+            request.user.auth_token.delete()
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=401)

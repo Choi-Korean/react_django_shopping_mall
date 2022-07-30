@@ -17,9 +17,14 @@ class Signup(APIView):
     def post(self, request, format=None):
         serializer = UserCreateSerializer(data=request.data) 
         if serializer.is_valid(raise_exception=True):
-            user = User.objects.create(
-                username=serializer.data['username'],
-            )
+            serializer.clean_email()
+            print(serializer)
+            user = User.objects.create(username=serializer.data['username'],
+                email=serializer.data['email'],
+                name=serializer.data['name'],
+                gender=serializer.data['gender'],
+                profile_img=request.data.get('profile_img'))
+            print(request.data.get('profile_img'))
             user.set_password(serializer.data['password'])
             user.save()
             auth_login(request, user)

@@ -39,7 +39,9 @@ SECRET_KEY = get_secret('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['', '127.0.0.1', get_secret('ip')]
+ALLOWED_HOSTS = ['', '127.0.0.1', get_secret('ip'), 'http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+
 
 
 # Application definition

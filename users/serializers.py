@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import User
+from rest_framework.parsers import MultiPartParser, FormParser
 
 User = get_user_model()
 
@@ -8,6 +9,7 @@ User = get_user_model()
 #     username = serializers.CharField(required=True)
 #     password = serializers.CharField(required=True)
 class UserCreateSerializer(serializers.ModelSerializer):
+    profile_img = serializers.ImageField(required=False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['email'].required = True
@@ -18,9 +20,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password', 'email', 'name', 'gender', 'profile_img']
+        parser_classes = (MultiPartParser, FormParser)
     
     def clean_email(self):
-        email = self.cleaned_data.get('email')
+        email = self.data['email']
         if email:
             qs = User.objects.filter(email=email)
             if qs.exists():

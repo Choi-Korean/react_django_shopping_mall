@@ -48,7 +48,7 @@ class User(AbstractUser, PermissionsMixin):
 
     name = models.CharField('이름', max_length=100)
     gender = models.CharField('성별', max_length=1, blank=True, choices=GenderChoices.choices)
-    profile_img = models.ImageField('프로필이미지', blank=True, upload_to=upload_to ,help_text="gif/png/jpg 이미지를 업로드해주세요.")
+    profile_img = models.ImageField('프로필이미지', blank=True, upload_to=upload_to, help_text="gif/png/jpg 이미지를 업로드해주세요.")
     # "accounts/profile_img/%Y/%m/%d",help_text="gif/png/jpg 이미지를 업로드해주세요.")
     # is_staff = models.BooleanField(
     #     _('staff status'),

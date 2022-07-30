@@ -12,6 +12,11 @@ import Cart from './Cart';
 import Signup from './Signup';
 import Login from './Login';
 import Logout from './Logout';
+import { Cookies } from "react-cookie";
+import './bootstrap.min.css';
+import './common.css';
+// import './tailwind.base.css';
+import './tailwind.css';
 
 export default class HomePage extends Component{
     constructor(props){
