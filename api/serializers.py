@@ -1,6 +1,8 @@
 from dataclasses import field
+from operator import mod
+from attr import fields
 from rest_framework import serializers
-from .models import Cart, Item
+from .models import Cart, Item, ProductCategory
 from rest_framework.parsers import MultiPartParser, FormParser
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -35,3 +37,9 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ('writer', 'item')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
+        fields = ('__all__')

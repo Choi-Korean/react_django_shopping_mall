@@ -14,4 +14,5 @@ urlpatterns = [
     path('create-cart/', CreateCart.as_view()),
     path('delete-cart/', DeleteCart.as_view()),
     path('cart-list/', GetCartList.as_view()),
+    path('cartegory-list/', GetCategoriesList.as_view()),
 ]

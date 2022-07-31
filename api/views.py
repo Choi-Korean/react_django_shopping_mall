@@ -3,13 +3,14 @@ from http import server
 from logging import root
 from os import stat
 import queue
+from unicodedata import category
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 
 from markets.models import Market
 from .models import Cart, Item, ProductCategory
-from .serializers import CartSerializer, ItemSerializer, CreateItemSerializer, updateItemSerializer
+from .serializers import CartSerializer, CategorySerializer, ItemSerializer, CreateItemSerializer, updateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
@@ -296,7 +297,14 @@ class DeleteCart(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'Cart Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
-
+class GetCategoriesList(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        category = ProductCategory.objects.all()
+        print(category)
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response({'Cartegory Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
     # def delete(self, request, **kwargs):
     #     if not self.request.session.exists(self.request.session.session_key):   # session 부여하기

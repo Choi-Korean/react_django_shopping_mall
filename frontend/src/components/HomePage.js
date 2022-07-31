@@ -22,11 +22,11 @@ export default class HomePage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            code: null,
+            // code: null,
             username: null,
             authenticated: null,
         };
-        this.clearCode = this.clearCode.bind(this);
+        // this.clearCode = this.clearCode.bind(this);
     }
 
     userHasAuthenticated(authenticated, username, token){ 
@@ -95,10 +95,12 @@ export default class HomePage extends Component{
                 {/* <Route path='/*' render={() => {
                     return this.state.id ? (this.props.navigate(`/item/${this.state.id}`)) : ( this.renderHomePage() )
                 }}></Route> */}
+                <Route path='/*' element={this.renderHomePage()}></Route>
                 <Route path='/buy' element={<BuyItemPage />} />
                 <Route path="/info" element={<Info /> } />
                 <Route path='/create' element={<CreateItemPage />} />
-                <Route path='/item/:id' element={<Item leaveItemCallback={this.clearCode}/>}/>
+                <Route path='/item/:id' element={<Item />}/> 
+                {/* leaveItemCallback={this.clearCode} */}
                 <Route path='/cart' element={<Cart />}/>
                 <Route path='/signup' element={<Signup />}/>
                 <Route path='/login' element={<Login userHasAuthenticated={this.userHasAuthenticated} />}/>
