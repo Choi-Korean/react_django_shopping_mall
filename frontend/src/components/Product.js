@@ -66,9 +66,9 @@ function Product({ id, display_name, sale_price, image, colors }) {
 
     return (
             <li className="t-flex t-flex-col t-group">
-                <a data-before="VIEW MORE" href="{% url 'products:detail' product.id %}"
-                className="{{img_box_class}} {{img_box_before_class}} {{img_box_after_class}}">
-                    <img className="t-block t-w-full t-transition-all group-hover:t-scale-110 t-relative t--z-50 t-object-cover"
+                <a data-before="VIEW MORE" href={`/item/${id}`}
+                className="product_img_div">
+                    <img className="product_img"
                         src={image} alt="" />
                          {/* style="aspect-ratio: 1 / 1;" */}
                 </a>

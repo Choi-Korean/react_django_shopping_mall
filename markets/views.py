@@ -20,3 +20,10 @@ class GetMarketList(APIView):
         market = Market.objects.filter(master_id=user.id)
         serializer = MarketSerializer(market, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class GetMarket(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, format=None):
+        market = Market.objects.filter(id=request.data.get('market_id'))
+        serializer = MarketSerializer(market)
+        return Response(serializer.data, status=status.HTTP_200_OK)

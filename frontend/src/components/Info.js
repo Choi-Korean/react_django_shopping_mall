@@ -20,12 +20,13 @@ const pages = {
 export default function Info(props) {
     const [page, setPage] = useState(pages.JOIN);
     const initialState = {
-        id: 0,
+        name: null,
+        display_name: null,
+        price: null,
+        sale_price: null,
         image: null,
-        listing_or_not: true,
-        showSettings: false,
-        like_count: 0,
-        created_at: null,
+        category: null,
+        market: null,
     }
 
     const [items, setItems] = useState([]);
@@ -89,16 +90,16 @@ export default function Info(props) {
         console.log(e);
         const requestOptions = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "X-CSRFToken": this.state.CSRFToken.get('csrftoken')},
             body: JSON.stringify({
-                code: e
+                id: e
             })
         };
         fetch('/api/buy-item/', requestOptions).then((response) => {
             if (response.ok) {
                 navigate(`/item/${e}`);
             } else {
-                this.setState({ error: "code not found." });
+                this.setState({ error: "item not found." });
             }
         }).catch((error) => {
             console.log(error);

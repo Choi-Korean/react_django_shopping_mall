@@ -41,7 +41,7 @@ class GetItem(APIView):
     serializer_class = ItemSerializer
 
     def get(self, request, format=None):
-        id = request.GET.get(self.id)
+        id = request.GET.get('id')
         if id != None:
             item = Item.objects.filter(id=id)   # 내가 id인 부분이 강의에서는 전부 랜덤생성한 code(session 느낌)임
             if len(item) > 0:
@@ -56,18 +56,18 @@ class GetItem(APIView):
 
 class BuyItem(APIView):
     permission_classes = [AllowAny]
-    lookup_url_kwarg = 'code'
+    lookup_url_kwarg = 'id'
 
     def post(self, request, foramt=None):
-        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
-            self.request.session.create()
+        # if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+        #     self.request.session.create()
         
-        code = request.data.get(self.lookup_url_kwarg)
-        if code != None:
-            item_result = Item.objects.filter(code=code)
+        id = request.data.get(self.lookup_url_kwarg)
+        if id != None:
+            item_result = Item.objects.filter(id=id)
             if len(item_result) > 0:
                 item = item_result[0]
-                self.request.session['item_code'] = code # code로 세션 부여
+                # self.request.session['item_code'] = code # code로 세션 부여
                 return Response({'message':'Item Bought!'}, status=status.HTTP_200_OK)
             # code 일치하는 거 없으면 Bad request
             return Response({'message':'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
@@ -303,6 +303,15 @@ class GetCategoriesList(APIView):
         category = ProductCategory.objects.all()
         print(category)
         serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # return Response({'Cartegory Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+class GetCategory(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, format=None):
+        category = ProductCategory.objects.filter(id=request.data.get('category_id'))
+        print(category)
+        serializer = CategorySerializer(category)
         return Response(serializer.data, status=status.HTTP_200_OK)
         # return Response({'Cartegory Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
