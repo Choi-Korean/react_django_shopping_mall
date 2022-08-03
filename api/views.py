@@ -1,20 +1,24 @@
+from curses import use_default_colors
 import datetime
 from http import server
 from logging import root
 from os import stat
 import queue
 from unicodedata import category
+from venv import create
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 
 from markets.models import Market
+from markets.serializers import MarketSerializer
 from .models import Cart, Item, ProductCategory
 from .serializers import CartSerializer, CategorySerializer, ItemSerializer, CreateItemSerializer, updateItemSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
+from users.models import User
 
 # 현재 wrtier 부분이, 대부분 session_key 넣어서 session 꺼내서 관리하는 형식. 나중에 login 구현하면
 # login정보로 변경해야 함
@@ -50,6 +54,11 @@ class GetItem(APIView):
                 # 처음 보는 코드라 남겨봄
                 # data['is_writer'] = self.request.session.session_key == item[0].writer
                 data['created_at'] = convertDate(data)
+                category = CategorySerializer(ProductCategory.objects.filter(id=data['category'])[0]).data
+                market = MarketSerializer(Market.objects.filter(id=data['market'])[0]).data
+                data['category'] = category
+                data['market'] = market
+                print(data)
                 return Response(data, status=status.HTTP_200_OK)
             return Response({'Item Not Found': 'Invalid Item code'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'URL Not Found' : 'Parameter Not Found in Request'}, status=status.HTTP_400_BAD_REQUEST)
@@ -209,10 +218,10 @@ class GetCart(APIView):
     serializer_class = CartSerializer
     lookup_url_kwarg = 'writer'
     def get(self, request, format=None):
-        writer = self.request.session.session_key
-        item = Item.objects.filter(code=request.GET.get('item'))
+        user = User.objects.filter(username=request.user)[0]
+        item = Item.objects.filter(id=request.GET.get('item'))
         if item.exists():
-            cart = Cart.objects.filter(writer=writer, item=item[0])
+            cart = Cart.objects.filter(writer=user, item=item[0])
             if len(cart) > 0:
                 serializer = CartSerializer(cart, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -224,8 +233,8 @@ class GetCartList(APIView):
     serializer_class = CartSerializer
     lookup_url_kwarg = 'writer'
     def get(self, request, format=None):
-        writer = self.request.session.session_key
-        cart = Cart.objects.filter(writer=writer)
+        user = User.objects.filter(username=request.user)[0]
+        cart = Cart.objects.filter(writer=user)
 
         # cart에 담긴 item id 불러와서 Item object 받아서 items에 넣어주기
         items = []
@@ -253,11 +262,15 @@ class CreateCart(APIView):
     permission_classes = [AllowAny]
     serializer_class = CartSerializer
     def post(self, request, format=None):
-        if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
-            self.request.session.create()
-        writer = self.request.session.session_key
+        # if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
+        #     self.request.session.create()
+        if request.user.is_anonymous:
+            return Response({'Bad Request' : 'Please login'},  status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.filter(username=request.user)[0]
+        print(user)
+        item = None
         try:    # react 페이지에서 접근할 때
-            item = Item.objects.filter(code=request.data['item'])[0]
+            item = Item.objects.filter(id=request.data['item'])[0]
         except: # API 서버에 직접 접근할때
             serializer = self.serializer_class(data=request.data)
             if not serializer.is_valid():
@@ -265,7 +278,7 @@ class CreateCart(APIView):
             if serializer.is_valid(): 
                 item_id = serializer.data.get('item')
                 item = Item.objects.filter(id=item_id)[0]
-        cart = Cart(writer=writer, item=item)
+        cart = Cart(writer=user, item=item)
         try:
             cart.save() 
             return Response(CartSerializer(cart).data, status=status.HTTP_200_OK)
@@ -280,9 +293,9 @@ class DeleteCart(APIView):
         if not self.request.session.exists(self.request.session.session_key):   # session 부여하기
             self.request.session.create()
         serializer = self.serializer_class(data=request.data)
-        writer = self.request.session.session_key
+        user = User.objects.filter(username=request.user)[0]
         try:    # react 페이지에서 접근할 때
-            item = Item.objects.filter(code=request.data['item'])[0]
+            item = Item.objects.filter(id=request.data['item'])[0]
         except: # API 서버에 직접 접근할때
             serializer = self.serializer_class(data=request.data)
             if not serializer.is_valid():
@@ -290,7 +303,7 @@ class DeleteCart(APIView):
             if serializer.is_valid(): 
                 item_id = serializer.data.get('item')
                 item = Item.objects.filter(id=item_id)[0]
-        cart = Cart.objects.filter(writer=writer, item=item)
+        cart = Cart.objects.filter(writer=user, item=item)
         if len(cart) > 0:
             print(cart[0])
             cart[0].delete()
@@ -308,8 +321,8 @@ class GetCategoriesList(APIView):
 
 class GetCategory(APIView):
     permission_classes = [AllowAny]
-    def post(self, request, format=None):
-        category = ProductCategory.objects.filter(id=request.data.get('category_id'))
+    def get(self, request, format=None):
+        category = ProductCategory.objects.filter(id=request.GET.get('id'))[0]
         print(category)
         serializer = CategorySerializer(category)
         return Response(serializer.data, status=status.HTTP_200_OK)

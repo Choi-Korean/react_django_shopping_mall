@@ -15,5 +15,5 @@ urlpatterns = [
     path('delete-cart/', DeleteCart.as_view()),
     path('cart-list/', GetCartList.as_view()),
     path('cartegory-list/', GetCategoriesList.as_view()),
-    path('get-cartegory/', GetCategory.as_view()),
+    path('get-category/', GetCategory.as_view()),
 ]

@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@material-ui/core';
 import Header from './Header';
+import { Cookies } from "react-cookie";
 
 function Product({ id, display_name, sale_price, image, colors }) {
 
     const [cart, setCart] = useState(false);
+    const CSRFToken = new Cookies();
 
     useEffect(() => {
         getCart();
@@ -28,9 +30,8 @@ function Product({ id, display_name, sale_price, image, colors }) {
     const cartCreateButtonPressed = () => {
         const requestOptions = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" , "X-CSRFToken": CSRFToken.get('csrftoken')},
             body: JSON.stringify({
-                writer: "",
                 item: id
             }),
         };
@@ -38,10 +39,6 @@ function Product({ id, display_name, sale_price, image, colors }) {
             .then((response) => {
                 if (response.ok) {
                     setCart(true);
-                    // } else {
-                    //     this.setState({
-                    //         msg: "Error Updating Item..."
-                    //     });
                 }
             });
     }
@@ -49,9 +46,8 @@ function Product({ id, display_name, sale_price, image, colors }) {
     const cartDeleteButtonPressed = () => {
         const requestOptions = {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json" , "X-CSRFToken": CSRFToken.get('csrftoken')},
             body: JSON.stringify({
-                writer: "",
                 item: id
             }),
         };
@@ -85,6 +81,11 @@ function Product({ id, display_name, sale_price, image, colors }) {
                 href="{% url 'products:detail' product.id %}">
                     <span>{colors}</span>
                 </a>
+                {cart ?
+                <div className="product_link_div"><Button color="primary" variant="contained" onClick={() => cartDeleteButtonPressed()}>찜해제</Button></div>
+                :
+                <div className="product_link_div"><Button color="secondary" variant="contained" onClick={() => cartCreateButtonPressed()}>찜하기</Button></div>
+                }
             </li>
 
         // <div className="product">

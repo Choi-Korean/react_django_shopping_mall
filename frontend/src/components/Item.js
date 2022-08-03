@@ -23,10 +23,8 @@ export default function Item(props) {
     price: null,
     sale_price: null,
     image: null,
-    category_id: null,
-    category: null,
-    market_id: null,
-    market: null,
+    category: {},
+    market: {},
     // spotifyAuthenticated: false,  // 초기 인증값 false
   }
 
@@ -39,7 +37,7 @@ export default function Item(props) {
   const new_file = null;
 
   useEffect(() => {
-    
+
     fetch("/api/get-item" + "?id=" + id)
       .then((res) => {
         if(!res.ok){
@@ -48,44 +46,47 @@ export default function Item(props) {
         }
         return res.json();
       }).then(data => {
+          console.log(data);
           setPostData({
+            id: data.id,
             name: data.name,
             display_name: data.display_name,
             price: data.price,
             sale_price: data.sale_price,
             image: data.image,
-            category_id: data.category,
-            market_id: data.market,
-        })
+            category: data.category,
+            market: data.market,
+        });
       });
 
-      const requestOptions = {
-        method: "POST",
-        // headers: {'Content-Type': 'application/json'},
-        headers: {"X-CSRFToken": CSRFToken.get('csrftoken')},
-        body: JSON.stringify({
-            market_id:postData.market_id,
-            category_id:postData.category_id,
-        })
-      };
+    // fetch('/api/get-category?id=' + c)
+    // .then((response) => response.json())
+    // .then((data) => {
+    //   setPostData({
+    //     ...postData,
+    //     category: data.name,
+    //   });
+    // });
 
-      fetch('/api/get-category', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        setPostData({
-          category: data.category,
-      })
-      });
+    // fetch('/markets/get-market?id=' + m)
+    // .then((response) => response.json())
+    // .then((data) => {
+    //   setPostData({
+    //     ...postData,
+    //     market: data.name,
+    //   });
+    // });
+      // const requestOptions = {
+      //   method: "POST",
+      //   // headers: {'Content-Type': 'application/json'},
+      //   headers: {"X-CSRFToken": CSRFToken.get('csrftoken')},
+      //   body: JSON.stringify({
+      //       market_id:postData.market_id,
+      //       category_id:postData.category_id,
+      //   })
+      // };
 
-      fetch('/markets/get-market', requestOptions)
-      .then((response) => response.json())
-      .then((data) => {
-        setPostData({
-          market: data.market,
-      })
-      });
-
-      console.log(postData);
+      
       // if(postData.isWriter){
       //   authenticateSpotify();
       // };
@@ -93,7 +94,7 @@ export default function Item(props) {
       // 내가 아래에 song 정보 바뀔때마다 Effect 실행되게 해서 그런듯
       // componentDidMount(); // 이거 호출하면 1초당 한번씩 request. 
       // componentWillUnmount();
-  },[postData.isWriter, spotifyAuthenticated]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+  },[]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
   // 이 배열안에 들어간 값(컴포넌트)이 바뀔 때마다 useEffect 실행됨. 비우면 처음 렌더링 될때 한번만 실행. 배열을 생략하면 리렌더링 될때마다 실행
 
 
@@ -215,7 +216,7 @@ export default function Item(props) {
                       </div>
                       <ul className="list-group list-group-flush">
                           <li className="list-group-item">
-                              <a href="#product-img"><img className="t-w-full t-max-w-[300px] t-rounded" src="{{product.thumb_img_url}}" alt="" /></a>
+                              <a href="#product-img"><img className="t-w-full t-max-w-[300px] t-rounded" src={postData.image} alt="" /></a>
                           </li>
                           <li className="list-group-item">
                               <span className="t-w-16 t-inline-block">번호</span>
@@ -223,11 +224,11 @@ export default function Item(props) {
                           </li>
                           <li className="list-group-item">
                               <span className="t-w-16 t-inline-block">마켓</span>
-                              <span className="badge bg-primary">{postData.market}</span>
+                              <span className="badge bg-primary">{postData.market.name}</span>
                           </li>
                           <li className="list-group-item">
                               <span className="t-w-16 t-inline-block">카테고리</span>
-                              {postData.category}
+                              {postData.category.name}
                           </li>
                           <li className="list-group-item">
                               <span className="t-w-16 t-inline-block">상품명</span>
@@ -366,7 +367,7 @@ export default function Item(props) {
 
               <div className="container t-mt-10">
                   <a href="#">
-                      <img id="product-img" className="t-w-full t-block rounded" src="{{product.thumb_img_url}}" alt="" />
+                      <img id="product-img" className="t-w-full t-block rounded" src={postData.image} alt="" />
                   </a>
               </div>
           </section>

@@ -11,7 +11,7 @@ function Cart() {
     useEffect(() => {
         getCartList();
         renderItemList();
-    });
+    },[]);
 
     const getCartList = () => {
         fetch("/api/cart-list")
@@ -35,12 +35,12 @@ function Cart() {
             <Grid>
                 <Product
                     // id={index ++}
-                    code={item.code}
-                    created_at={item.created_at}
-                    listing_or_not={item.listing_or_not}
+                    id={item.id}
+                    display_name={item.display_name}
+                    sale_price={item.sale_price}
                     image={item.image}
-                    like_count={item.like_count} />
-                <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.code)}>Buy</Button>
+                    colors={item.colors} />
+                <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.id)}>Buy</Button>
             </Grid>
         );
         return <div className="product_container">{item_list}</div>;
