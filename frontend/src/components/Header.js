@@ -14,7 +14,7 @@ export default function Header() {
 
     useEffect(() => {
         getCartList();
-    }, [token]);
+    },[token]);
 
     const getCartList = () => {
         fetch("/api/cart-list")

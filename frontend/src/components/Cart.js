@@ -14,6 +14,7 @@ function Cart() {
     },[]);
 
     const getCartList = () => {
+        console.log("!?");
         fetch("/api/cart-list")
             .then((response) => {
                 if(!response.ok){
@@ -30,6 +31,17 @@ function Cart() {
             });
     }
 
+    const setStateFromChild = (id) => {
+        console.log(items);
+        let new_item = [];
+        for(let i = 0; i < items.length; i++) {
+            if(items[i].id != id){
+                new_item.push(items[i])
+            }
+        }
+        setItems(new_item);
+    };
+
     const renderItemList = () => {
         const item_list = items.map((item) =>
             <Grid>
@@ -39,7 +51,9 @@ function Cart() {
                     display_name={item.display_name}
                     sale_price={item.sale_price}
                     image={item.image}
-                    colors={item.colors} />
+                    colors={item.colors}
+                    setParent={setStateFromChild}
+                    />
                 <Button variant="contained" color="primary" onClick={() => buyButtonPressed(item.id)}>Buy</Button>
             </Grid>
         );

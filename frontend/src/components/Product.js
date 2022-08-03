@@ -6,7 +6,7 @@ import { Button } from '@material-ui/core';
 import Header from './Header';
 import { Cookies } from "react-cookie";
 
-function Product({ id, display_name, sale_price, image, colors }) {
+function Product({ id, display_name, sale_price, image, colors, setParent }) {
 
     const [cart, setCart] = useState(false);
     const CSRFToken = new Cookies();
@@ -57,6 +57,7 @@ function Product({ id, display_name, sale_price, image, colors }) {
                     setCart(false);
                 }
             });
+        setParent(id);
     }
 
 
