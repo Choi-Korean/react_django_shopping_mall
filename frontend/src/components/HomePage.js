@@ -56,7 +56,7 @@ export default class HomePage extends Component{
             <Grid container spacing={4}>
                 <Grid item xs={12} align="center">
                     <Typography variant='h3' compact="h3">
-                        House Party
+                        There is everything you want
                     </Typography>
                 </Grid>
                 <Grid item xs={12} align="center">
@@ -77,11 +77,7 @@ export default class HomePage extends Component{
         );
     }
 
-    clearCode(){
-        this.setState({
-            id: null,
-        });
-    }
+
     
     render(){ // slash는 exact path로 처리해서 /buy 등이 일치하지 않게 처리
         return (<Router>
@@ -108,3 +104,10 @@ export default class HomePage extends Component{
         </Router>);
     }
 }
+
+
+// clearCode(){
+//     this.setState({
+//         id: null,
+//     });
+// }

@@ -57,7 +57,9 @@ function Product({ id, display_name, sale_price, image, colors, setParent }) {
                     setCart(false);
                 }
             });
-        setParent(id);
+        try {
+            setParent(id);
+        } catch (error) {}
     }
 
 

@@ -13,7 +13,7 @@ export default function Header() {
     const [token, setToken] = useState(localStorage.getItem('token'));
 
     useEffect(() => {
-        getCartList();
+        componentDidMount();
     },[token]);
 
     const getCartList = () => {
@@ -29,7 +29,11 @@ export default function Header() {
             });
     }
 
-    const handleCreateButtonPressed = () => {
+    const componentDidMount = () => {
+        setInterval(getCartList, 500);
+    }
+
+    const handleLogoutButtonPressed = () => {
         var requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -48,13 +52,21 @@ export default function Header() {
         );
     }
 
-    const handleUserName = (e) => {
-        setUsername(e.target.value)
-    };
+    // const handleUserName = (e) => {
+    //     setUsername(e.target.value)
+    // };
 
-    const handlePassword = (e) => {
-        setPassword(e.target.value)
-    };
+    // const handlePassword = (e) => {
+    //     setPassword(e.target.value)
+    // };
+
+    // const setStateFromChild = (e) => {
+    //     if(e > 0){
+    //         setCartCount(cartCount + 1);
+    //     }else{
+    //         setCartCount(cartCount - 1);
+    //     }
+    // };
 
     return (
         <div className='header'>
@@ -71,7 +83,7 @@ export default function Header() {
                     <span className='header_optionLineOne'>Hi</span>
                     {token
                     ?
-                        <button className='header_optionLineTwo' onClick={() => handleCreateButtonPressed()}>logout?</button>
+                        <button className='header_optionLineTwo' onClick={() => handleLogoutButtonPressed()}>logout?</button>
                     :
                         <><Link to='/login' style={{ color: 'inherit', textDecoration: 'none' }}>
                             <span className='header_optionLineTwo'>login?</span>
